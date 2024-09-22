@@ -1,268 +1,192 @@
-import {
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Image,
-} from "react-native";
-import React, { useState } from "react";
-import { Appbar, PaperProvider, Searchbar } from "react-native-paper";
-import { Ionicons } from "@expo/vector-icons";
+import React, { useRef, useState, useEffect } from 'react';
+import { View, Text, ScrollView, StyleSheet, Image, Dimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';  // SafeAreaView cho notch
+import Icon from 'react-native-vector-icons/Ionicons';
 
+const { width } = Dimensions.get('window');  // Lấy chiều rộng màn hình cho banner
 
-const Home = ({ navigation }) => {
-  const [search, setSearch] = useState("");
+const HomeScreen = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);  // Chỉ số banner hiện tại
+  const scrollViewRef = useRef(null);  // Tạo tham chiếu cho ScrollView
+  const banners = [  // Danh sách banner
+    {
+      image: require('../../img/imgAuth/fb.png'),
+      text: 'New Feature - Chat in-app',
+    },
+    {
+      image: require('../../img/imgAuth/fb.png'),
+      text: 'Rebook your favorite Tasker!',
+    },
+  ];
 
-  const listSubjects = ({ item }) => (
-    <View
-      style={{
-        width: 90,
-        height: 70,
-        marginLeft: 7,
-        marginTop: 10,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <TouchableOpacity onPress={() => handleNavigation(item.id)}>
-        <Image
-          source={item.image}
-          style={{ width: 45, height: 45, resizeMode: "contain" }}
-        />
-      </TouchableOpacity>
-      <Text style={{ fontSize: 15, marginTop: 5 }}>{item.name}</Text>
-    </View>
-  );
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentIndex((prevIndex) => {
+        const nextIndex = prevIndex === banners.length - 1 ? 0 : prevIndex + 1;
+        scrollViewRef.current.scrollTo({ x: nextIndex * width, animated: true });
+        return nextIndex;
+      });
+    }, 5000);  // Thời gian chuyển mỗi banner (5 giây)
 
-  const handleNavigation = (id) => {
-    switch (id) {
-      case 1:
-        navigation.navigate("Home");
-        break;
-      case 2:
-        navigation.navigate("TinTucNavigation");
-        break;
-      case 3:
-        navigation.navigate("TruyenChemNavigation");
-        break;
-      case 4:
-        // navigation.navigate("TruyenChem_S1");
-        break;
-      case 5:
-        // navigation.navigate("TruyenChem_S1");
-        break;
-      case 6:
-        // navigation.navigate("TruyenChem_S1");
-        break;
-      case 7:
-        // navigation.navigate("TruyenChem_S1");
-        break;
-      case 8:
-        // navigation.navigate("TruyenChem_S1");
-        break;
-      case 9:
-        // navigation.navigate("TruyenChem_S1");
-        break;
-      default:
-        navigation.navigate("Home");
-        break;
-    }
-  };
-
-  const listSuggest = ({ item }) => (
-    <TouchableOpacity
-      style={{
-        width: "100%",
-        height: 120,
-        marginTop: 7,
-        flexDirection: "row",
-        borderBottomWidth: 1,
-        borderColor: "#D0D0D0",
-      }}
-    >
-      <View style={{ flex: 6.7 }}>
-        <View style={{ flex: 6.5 }}>
-          <Text style={{ fontSize: 15, marginTop: 4 }}>{item.title}</Text>
-        </View>
-        <View style={{ flex: 3.5, flexDirection: "row", alignItems: "center" }}>
-          <Image source={item.icon} />
-          <Text style={{ fontSize: 16, marginLeft: 5 }}>{item.subject}</Text>
-        </View>
-      </View>
-      <View
-        style={{
-          flex: 3.3,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Image
-          source={item.image}
-          style={{ width: 100, height: 100, resizeMode: "contain" }}
-        />
-      </View>
-    </TouchableOpacity>
-  );
+    return () => clearInterval(intervalId);  // Xóa interval khi component bị hủy
+  }, [banners.length]);
 
   return (
-    <PaperProvider style={{ flex: 1 }}>
-      <Appbar.Header elevated="true" style={{ backgroundColor: "white" }}>
-        <View
-          style={{
-            width: "85%",
-            height: "100%",
-            justifyContent: "center",
-            paddingLeft: 15,
-          }}
-        >
-          <Text style={{ fontWeight: "bold", fontSize: 30, color: "#3B7DED" }}>
-            Enggo
-          </Text>
-        </View>
-        <TouchableOpacity>
-          <Appbar.Action icon="bell" size={30} />
-        </TouchableOpacity>
-      </Appbar.Header>
-
-      <ScrollView style={{ flex: 1 }}>
-        {/* search bar */}
-        <View
-          style={{
-            width: "100%",
-            height: 85,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Searchbar
-            placeholder="Search"
-            value={search}
-            onChangeText={setSearch}
-            style={{
-              width: "90%",
-              height: "65%",
-              backgroundColor: "#E9E3E3",
-              borderWidth: 1,
-              borderColor: "gray",
-            }}
-          />
-        </View>
-
-        {/* Subject */}
-        {/* <View
-          style={{
-            width: "100%",
-            height: 320,
-            justifyContent: "center",
-            alignItems: "center",
-            borderBottomWidth: 1,
-            borderColor: "#D0D0D0",
-          }}
-        >
-          <View style={{ width: "95%", height: "100%" }}>
-            <View
-              style={{
-                flex: 2,
-                flexDirection: "row",
-              }}
-            >
-              <View
-                style={{
-                  flex: 6.5,
-                  justifyContent: "center",
-                }}
-              >
-                <Text
-                  style={{ fontWeight: "bold", fontSize: 18, marginLeft: 10 }}
-                >
-                  Nguồn học
-                </Text>
-              </View>
-              <TouchableOpacity
-                style={{
-                  flex: 3.5,
-                  justifyContent: "center",
-                  alignItems: "flex-end",
-                }}
-              >
-                <Text
-                  style={{ fontSize: 18, color: "#1977F3", marginRight: 15 }}
-                >
-                  Cách học
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View style={{ flex: 8 }}>
-              <FlatList
-                keyExtractor={(item) => item.id}
-                numColumns={4}
-                horizontal={false}
-                renderItem={listSubjects}
-                data={ApiSubjects}
-                scrollEnabled={false}
-              />
-            </View>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.welcomeText}>Xin chào Bảo</Text>
+          <View style={styles.headerPoints}>
+            <Text style={styles.pointsText}>0 đ</Text>
+            <Text style={styles.bPointsText}>0 bPoints</Text>
           </View>
         </View>
 
-        {/* suggested */}
-        {/* <View
-          style={{
-            width: "100%",
-            height: 480,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+        {/* Banner quảng cáo với tự động cuộn */}
+        <ScrollView
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          ref={scrollViewRef}  // Tham chiếu đến ScrollView
+          style={styles.bannerScroll}
         >
-          <View style={{ width: "92%", height: "100%" }}>
-            <View
-              style={{
-                flex: 1.5,
-                justifyContent: "center",
-              }}
-            >
-              <View
-                style={{
-                  width: 180,
-                  height: 38,
-                  borderRadius: 15,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  backgroundColor: "#D0D0D0",
-                }}
-              >
-                <View
-                  style={{
-                    flex: 2,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Ionicons name="star-outline" size={25} color="black" />
-                </View>
-                <View style={{ flex: 7 }}>
-                  <Text style={{ fontSize: 16 }}>Đề xuất cho bạn</Text>
-                </View>
-              </View>
+          {banners.map((banner, index) => (
+            <View key={index} style={styles.bannerItem}>
+              <Image source={banner.image} style={styles.bannerImage} />
+              <Text style={styles.bannerText}>{banner.text}</Text>
             </View>
-            <View style={{ flex: 8.5 }}>
-              <FlatList
-                keyExtractor={(item) => item.id}
-                horizontal={false}
-                renderItem={listSuggest}
-                data={ApiSuggest}
-                scrollEnabled={false}
-              />
+          ))}
+        </ScrollView>
+
+        {/* Danh sách dịch vụ chính */}
+        <View style={styles.servicesContainer}>
+          <Text style={styles.servicesTitle}>Dịch vụ</Text>
+          <Text style={styles.viewAllText}>Xem tất cả</Text>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.servicesScroll}>
+            <View style={styles.serviceItem}>
+              <Icon name="home" size={30} color="#ff8a00" />
+              <Text style={styles.serviceText}>Dọn dẹp nhà</Text>
             </View>
-          </View>
-        </View> */}
+            <View style={styles.serviceItem}>
+              <Icon name="bed" size={30} color="#ff8a00" />
+              <Text style={styles.serviceText}>Dọn dẹp nhà gói cố định</Text>
+            </View>
+            <View style={styles.serviceItem}>
+              <Icon name="cleaning-services" size={30} color="#ff8a00" />
+              <Text style={styles.serviceText}>Tổng vệ sinh</Text>
+            </View>
+            <View style={styles.serviceItem}>
+              <Icon name="airplane" size={30} color="#ff8a00" />
+              <Text style={styles.serviceText}>Vệ sinh máy lạnh</Text>
+            </View>
+          </ScrollView>
+        </View>
+
+        {/* Thêm 4 dịch vụ ngang */}
+        <View style={styles.servicesContainer}>
+          <Text style={styles.servicesTitle}>Các dịch vụ khác</Text>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.servicesScroll}>
+            <View style={styles.serviceItem}>
+              <Icon name="car-sport-outline" size={30} color="#ff8a00" />
+              <Text style={styles.serviceText}>Vệ sinh xe hơi</Text>
+            </View>
+            <View style={styles.serviceItem}>
+              <Icon name="water-outline" size={30} color="#ff8a00" />
+              <Text style={styles.serviceText}>Làm sạch hồ bơi</Text>
+            </View>
+            <View style={styles.serviceItem}>
+              <Icon name="hammer-outline" size={30} color="#ff8a00" />
+              <Text style={styles.serviceText}>Sửa chữa đồ gia dụng</Text>
+            </View>
+            <View style={styles.serviceItem}>
+              <Icon name="leaf-outline" size={30} color="#ff8a00" />
+              <Text style={styles.serviceText}>Chăm sóc cây cảnh</Text>
+            </View>
+          </ScrollView>
+        </View>
+
+        {/* Phần đánh giá từ khách hàng */}
+        <View style={styles.reviewsContainer}>
+          <Text style={styles.reviewsTitle}>Đánh giá từ khách hàng</Text>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.reviewsScroll}>
+            <View style={styles.reviewItem}>
+              <Text style={styles.reviewText}>"Dịch vụ rất tốt, nhân viên nhiệt tình!"</Text>
+              <Text style={styles.reviewAuthor}>- Nguyễn An</Text>
+            </View>
+            <View style={styles.reviewItem}>
+              <Text style={styles.reviewText}>"Sẽ tiếp tục sử dụng trong tương lai!"</Text>
+              <Text style={styles.reviewAuthor}>- Trần Hùng</Text>
+            </View>
+            <View style={styles.reviewItem}>
+              <Text style={styles.reviewText}>"Giá cả hợp lý và chất lượng." </Text>
+              <Text style={styles.reviewAuthor}>- Lê Thảo</Text>
+            </View>
+          </ScrollView>
+        </View>
       </ScrollView>
-    </PaperProvider>
+    </SafeAreaView>
   );
 };
 
-export default Home;
+const styles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: '#fff' },
+  header: { flexDirection: 'row', justifyContent: 'space-between', padding: 16, backgroundColor: '#ff8a00', borderBottomLeftRadius: 15, borderBottomRightRadius: 15 },
+  welcomeText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  headerPoints: { alignItems: 'flex-end' },
+  pointsText: { color: '#fff', fontSize: 16 },
+  bPointsText: { color: '#fff', fontSize: 12 },
 
-const styles = StyleSheet.create({});
+  // Banner quảng cáo
+  bannerScroll: {
+    marginTop: 16,
+  },
+  bannerItem: {
+    width: width - 40,
+    marginLeft: 20,
+    marginRight: 20,
+    height: 150,
+    backgroundColor: '#fff5e1',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+  },
+  bannerImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+    borderRadius: 10,
+  },
+  bannerText: {
+    fontSize: 16,
+    color: '#ff8a00',
+    fontWeight: 'bold',
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+  },
+
+  servicesContainer: { padding: 16 },
+  servicesTitle: { fontSize: 18, fontWeight: 'bold' },
+  viewAllText: { position: 'absolute', right: 16, top: 16, color: '#ff8a00' },
+  servicesScroll: { marginTop: 16 },
+  serviceItem: { alignItems: 'center', marginRight: 16, width: 80 },
+  serviceText: { fontSize: 12, textAlign: 'center', marginTop: 8 },
+
+  // Phần đánh giá từ khách hàng
+  reviewsContainer: { padding: 16 },
+  reviewsTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
+  reviewsScroll: { marginTop: 10 },
+  reviewItem: {
+    width: 250,
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    marginRight: 16,
+  },
+  reviewText: { fontSize: 14, fontStyle: 'italic' },
+  reviewAuthor: { fontSize: 12, textAlign: 'right', marginTop: 5, fontWeight: 'bold' },
+});
+
+export default HomeScreen;

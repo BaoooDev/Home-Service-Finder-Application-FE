@@ -12,6 +12,7 @@ import RequestResetPassword from "../view/Authen/RequestResetPassword";
 
 import Account from "../view/TabScreen/Account";
 import Home from "../view/TabScreen/Home";
+import Activity from "../view/TabScreen/ActivityScreen.js";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -30,7 +31,17 @@ const TabNavigationContainer = () => {
           headerShown: false,
         }}
       />
-      
+      <Tab.Screen
+        name="Activity"
+        component={Activity}  // Giả sử bạn đã có màn hình Hoạt động
+        options={{
+          tabBarLabel: "Hoạt động",
+          tabBarIcon: ({ color, size }) => {
+            return <Ionicons name="document-text-outline" size={size} color={color} />; // Sử dụng icon cho Hoạt động
+          },
+          headerShown: false,
+        }}
+      />
       <Tab.Screen
         name="Account"
         component={Account}
