@@ -1,21 +1,21 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, Dimensions } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, Dimensions,TouchableOpacity  } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';  // SafeAreaView cho notch
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const { width } = Dimensions.get('window');  // Lấy chiều rộng màn hình cho banner
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);  // Chỉ số banner hiện tại
   const scrollViewRef = useRef(null);  // Tạo tham chiếu cho ScrollView
   const banners = [  // Danh sách banner
     {
       image: require('../../img/imgAuth/fb.png'),
-      text: 'New Feature - Chat in-app',
+      //text: 'New Feature - Chat in-app',
     },
     {
       image: require('../../img/imgAuth/fb.png'),
-      text: 'Rebook your favorite Tasker!',
+      //text: 'Rebook your favorite Tasker!',
     },
   ];
 
@@ -63,22 +63,29 @@ const HomeScreen = () => {
           <Text style={styles.servicesTitle}>Dịch vụ</Text>
           <Text style={styles.viewAllText}>Xem tất cả</Text>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.servicesScroll}>
-            <View style={styles.serviceItem}>
+          <TouchableOpacity
+              style={styles.serviceItem}
+              onPress={() => navigation.navigate('ServiceNavigation', { service: 'Dọn dẹp nhà' })}
+            >
               <Icon name="home" size={30} color="#ff8a00" />
               <Text style={styles.serviceText}>Dọn dẹp nhà</Text>
-            </View>
-            <View style={styles.serviceItem}>
-              <Icon name="bed" size={30} color="#ff8a00" />
-              <Text style={styles.serviceText}>Dọn dẹp nhà gói cố định</Text>
-            </View>
-            <View style={styles.serviceItem}>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.serviceItem}
+              onPress={() => navigation.navigate('ServiceNavigation', { service: 'Tổng vệ sinh' })}
+            >
               <Icon name="cleaning-services" size={30} color="#ff8a00" />
               <Text style={styles.serviceText}>Tổng vệ sinh</Text>
-            </View>
-            <View style={styles.serviceItem}>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.serviceItem}
+              onPress={() => navigation.navigate('ServiceNavigation', { service: 'Vệ sinh máy lạnh' })}
+            >
               <Icon name="airplane" size={30} color="#ff8a00" />
               <Text style={styles.serviceText}>Vệ sinh máy lạnh</Text>
-            </View>
+            </TouchableOpacity>
           </ScrollView>
         </View>
 

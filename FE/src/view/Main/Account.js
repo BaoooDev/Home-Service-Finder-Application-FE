@@ -26,7 +26,7 @@ const AccountScreen = () => {
         {/* Các mục trong trang tài khoản */}
         <View style={styles.menuContainer}>
           <MenuItem icon="wallet-outline" text="bPay" />
-          <MenuItem icon="gift-outline" text="Ưu đãi của tôi" badge="2" />
+          <MenuItem icon="gift-outline" text="Ưu đãi của tôi"  />
           <MenuItem icon="ribbon-outline" text="bRewards" />
           <MenuItem icon="pricetag-outline" text="Gói Ưu Đãi" />
           <MenuItem icon="heart-outline" text="Tasker yêu thích" />

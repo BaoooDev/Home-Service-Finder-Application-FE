@@ -15,7 +15,7 @@ const ActivityScreen = () => {
               style={styles.activityImage}
             />
             <Text style={styles.messageText}>Ngôi nhà tươm tất sẽ giúp bạn cảm thấy thoải mái hơn.</Text>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} >
               <Text style={styles.buttonText}>Đăng việc ngay</Text>
             </TouchableOpacity>
           </View>

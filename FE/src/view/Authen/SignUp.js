@@ -131,6 +131,39 @@ const SignUp = ({ navigation }) => {
                 alignItems: "center",
               }}
             >
+              <Ionicons name="call-outline" size={25} color="black" />
+            </View>
+            <View style={{ flex: 8.5, justifyContent: "center" }}>
+              <TextInput
+                placeholder="Nhập số điện thoại của bạn"
+                style={{
+                  color: "gray",
+                  fontSize: 18,
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: 12,
+                }}
+              />
+            </View>
+          </View>
+          <View
+            style={{
+              width: "100%",
+              height: 55,
+              borderWidth: 1,
+              borderRadius: 12,
+              marginTop: 15,
+              flexDirection: "row",
+              borderColor: "gray",
+            }}
+          >
+            <View
+              style={{
+                flex: 1.5,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <Ionicons name="lock-closed-outline" size={25} color="black" />
             </View>
             <View style={{ flex: 7, justifyContent: "center" }}>
@@ -242,13 +275,13 @@ const SignUp = ({ navigation }) => {
               borderRadius: 10,
               justifyContent: "center",
               alignItems: "center",
-              marginTop: 12,
+              marginTop: 55,
             }}
             onPress={() => navigation.navigate("SignIn")}
           >
             <Text style={{ color: "white", fontSize: 20 }}>Đăng ký</Text>
           </TouchableOpacity>
-          <Text
+          {/* <Text
             style={{
               color: "gray",
               fontWeight: "bold",
@@ -313,7 +346,7 @@ const SignUp = ({ navigation }) => {
             <View style={{ flex: 7 }}>
               <Text style={{ fontSize: 18 }}>Đăng ký với Facebook</Text>
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <Text style={{ fontSize: 16, marginTop: 8 }}>
             Ban đã có tài khoản?
             <TouchableOpacity onPress={() => navigation.goBack()}>

@@ -52,7 +52,7 @@ const SignIn = ({ navigation }) => {
         }}
       >
         <Image
-          source={require("../../img/imgAuth/logoSplashScreen.png")}
+          source={require("../../img/imgAuth/logo.png")}
           style={{
             marginTop: 18,
             width: 100,
@@ -61,7 +61,7 @@ const SignIn = ({ navigation }) => {
           }}
         ></Image>
         <Text style={{ fontWeight: "bold", fontSize: 35, marginTop: 5 }}>
-          Enggo
+          TKBEE
         </Text>
       </View>
 
@@ -240,7 +240,7 @@ const SignIn = ({ navigation }) => {
           >
             <Text style={{ color: "white", fontSize: 18 }}>Đăng nhập</Text>
           </TouchableOpacity>
-          <Text
+          {/* <Text
             style={{
               color: "gray",
               fontWeight: "bold",
@@ -305,7 +305,7 @@ const SignIn = ({ navigation }) => {
             <View style={{ flex: 7 }}>
               <Text style={{ fontSize: 18 }}>Đăng nhập với Facebook</Text>
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <Text style={{ fontSize: 16, marginTop: 8 }}>
             Bạn chưa có tài khoản?
             <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
