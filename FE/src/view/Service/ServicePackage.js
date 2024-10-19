@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Switch, SafeAreaView } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';  // Đảm bảo bạn đã cài đặt react-native-vector-icons và expo/vector-icons
+import { Ionicons } from '@expo/vector-icons';  
 
-const ServicePackage = ({ navigation }) => {
-  const [selectedTime, setSelectedTime] = useState('3 giờ');
+const ServicePackage = ({ navigation, route }) => {
+  const { selectedAddress } = route.params;
+  const { serviceType } = route.params;
+  const [selectedService, setSelectedService] = useState('3 giờ');
   const [isPremium, setIsPremium] = useState(false);
 
   const togglePremiumSwitch = () => setIsPremium(previousState => !previousState);
@@ -19,7 +21,7 @@ const ServicePackage = ({ navigation }) => {
       {/* Thông tin địa chỉ */}
       <View style={styles.addressContainer}>
         <Ionicons name="location-outline" size={20} color="#ff8a00" />
-        <Text style={styles.addressText}>1392 Đường Quang Trung, phường 14, Gò Vấp, Hồ Chí Minh</Text>
+        <Text style={styles.addressText}>{selectedAddress.address}</Text>
       </View>
 
       {/* Thời lượng lựa chọn */}
@@ -27,24 +29,24 @@ const ServicePackage = ({ navigation }) => {
       <Text style={styles.description}>Vui lòng ước tính diện tích cần dọn dẹp và chọn phương án phù hợp.</Text>
 
       <TouchableOpacity
-        style={[styles.timeOption, selectedTime === '2 giờ' && styles.selectedOption]}
-        onPress={() => setSelectedTime('2 giờ')}
+        style={[styles.timeOption, selectedService === '2 giờ' && styles.selectedOption]}
+        onPress={() => setSelectedService('2 giờ')}
       >
         <Text style={styles.timeText}>2 giờ</Text>
         <Text style={styles.subText}>Tối đa 55m² hoặc 2 phòng</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[styles.timeOption, selectedTime === '3 giờ' && styles.selectedOption]}
-        onPress={() => setSelectedTime('3 giờ')}
+        style={[styles.timeOption, selectedService === '3 giờ' && styles.selectedOption]}
+        onPress={() => setSelectedService('3 giờ')}
       >
         <Text style={styles.timeText}>3 giờ</Text>
         <Text style={styles.subText}>Tối đa 85m² hoặc 3 phòng</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={[styles.timeOption, selectedTime === '4 giờ' && styles.selectedOption]}
-        onPress={() => setSelectedTime('4 giờ')}
+        style={[styles.timeOption, selectedService === '4 giờ' && styles.selectedOption]}
+        onPress={() => setSelectedService('4 giờ')}
       >
         <Text style={styles.timeText}>4 giờ</Text>
         <Text style={styles.subText}>Tối đa 105m² hoặc 4 phòng</Text>
@@ -69,7 +71,7 @@ const ServicePackage = ({ navigation }) => {
         <Text style={styles.totalText}>240,000 VND/3h</Text>
         <TouchableOpacity
           style={styles.nextButton}
-          onPress={() => navigation.navigate('TimeSelection')}
+          onPress={() => navigation.navigate('TimeSelection', { selectedService, selectedAddress,serviceType })}
         >
           <Text style={styles.nextButtonText}>Tiếp theo</Text>
         </TouchableOpacity>

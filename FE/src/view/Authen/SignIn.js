@@ -6,9 +6,14 @@ import {
   TouchableOpacity,
   Switch,
   TextInput,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import * as SecureStore from 'expo-secure-store'; // Import SecureStore
+
+// Import API_URL from .env
+import { API_URL } from "@env"; 
 
 const SignIn = ({ navigation }) => {
   // Switch
@@ -16,41 +21,55 @@ const SignIn = ({ navigation }) => {
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
   // show/hide password
-  //   const [password, setPassword] = useState("");
-  const [isPasswordVisible, setPasswordVisible] = useState(false); //password co the nhin thay duoc mac dinh la false
-
+  const [isPasswordVisible, setPasswordVisible] = useState(false); 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!isPasswordVisible);
   };
 
-  // handle login
-  //   const [email, setEmail] = useState("");
+  // Login form state
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  //   const handleLogin = () => {
-  //     axios
-  //       .get(`https://6627001fb625bf088c071863.mockapi.io/emailLogin`)
-  //       .then((response) => {
-  //         const data = response.data;
-  //         const user = data.find((user) => user.email === email);
-  //         if (user) {
-  //           console.log("Login successful");
-  //           navigation.navigate("TabNavigation");
-  //         } else {
-  //           console.log("Login failed");
-  //         }
-  //       });
-  //   };
+  // Handle login function
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Thông báo', 'Vui lòng nhập đầy đủ thông tin');
+      return;
+    }
+  
+    try {
+      const response = await fetch(`${API_URL}/login/client`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+  
+      const result = await response.json();
+  
+      if (response.ok) {
+        // Store token and userId as strings
+        await SecureStore.setItemAsync('authToken', result.token.toString());
+        // Navigate to the next screen
+        navigation.navigate('TabNavigationContainer');
+      } else {
+        Alert.alert('Đăng nhập thất bại', result.msg);
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      Alert.alert('Đăng nhập thất bại', 'Có lỗi xảy ra khi đăng nhập');
+    }
+  };
+  
 
   return (
     <View style={styles.container}>
       {/* logo */}
-      <View
-        style={{
-          flex: 2.7,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      <View style={{ flex: 2.7, alignItems: "center", justifyContent: "center" }}>
         <Image
           source={require("../../img/imgAuth/logo.png")}
           style={{
@@ -59,22 +78,18 @@ const SignIn = ({ navigation }) => {
             height: 100,
             resizeMode: "contain",
           }}
-        ></Image>
+        />
         <Text style={{ fontWeight: "bold", fontSize: 35, marginTop: 5 }}>
           TKBEE
         </Text>
       </View>
 
       {/* Sign in form */}
-      <View
-        style={{
-          flex: 3,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      <View style={{ flex: 3, alignItems: "center", justifyContent: "center" }}>
         <View style={{ width: "85%", height: "100%", paddingTop: 10 }}>
           <Text style={{ fontWeight: "bold", fontSize: 26 }}>Đăng nhập</Text>
+
+          {/* Email input */}
           <View
             style={{
               width: "100%",
@@ -96,7 +111,6 @@ const SignIn = ({ navigation }) => {
               <Ionicons name="mail-outline" size={25} color="black" />
             </View>
             <View style={{ flex: 8.5, justifyContent: "center" }}>
-              {/* Input Email */}
               <TextInput
                 placeholder="Nhập email"
                 style={{
@@ -106,9 +120,13 @@ const SignIn = ({ navigation }) => {
                   height: "100%",
                   borderRadius: 12,
                 }}
+                value={email}
+                onChangeText={setEmail}
               />
             </View>
           </View>
+
+          {/* Password input */}
           <View
             style={{
               width: "100%",
@@ -130,11 +148,7 @@ const SignIn = ({ navigation }) => {
               <Ionicons name="lock-closed-outline" size={25} color="black" />
             </View>
             <View style={{ flex: 7, justifyContent: "center" }}>
-              {/* Input Password */}
               <TextInput
-                // value={password}
-                // onChangeText={setPassword}
-                // secureTextEntry={!isPasswordVisible}
                 placeholder="Nhập mật khẩu"
                 style={{
                   color: "gray",
@@ -143,6 +157,9 @@ const SignIn = ({ navigation }) => {
                   height: "100%",
                   borderRadius: 12,
                 }}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!isPasswordVisible}
               />
             </View>
             <TouchableOpacity
@@ -160,6 +177,8 @@ const SignIn = ({ navigation }) => {
               />
             </TouchableOpacity>
           </View>
+
+          {/* Remember me switch */}
           <View
             style={{
               width: "100%",
@@ -174,11 +193,7 @@ const SignIn = ({ navigation }) => {
                 flexDirection: "row",
               }}
             >
-              <View
-                style={{
-                  flex: 3,
-                }}
-              >
+              <View style={{ flex: 3 }}>
                 <Switch
                   trackColor={{ false: "#767577", true: "#81b0ff" }}
                   onValueChange={toggleSwitch}
@@ -187,131 +202,40 @@ const SignIn = ({ navigation }) => {
                 />
               </View>
               <View style={{ flex: 7, marginTop: 5 }}>
-                <Text style={{ fontSize: 16, marginLeft: -5 }}>
-                  Nhớ tài khoản
-                </Text>
+                <Text style={{ fontSize: 16, marginLeft: -5 }}>Nhớ tài khoản</Text>
               </View>
             </View>
-            <View
-              style={{
-                flex: 4,
-                // alignItems: "center",
-                // justifyContent: "center",
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => navigation.navigate("RequestResetPassword")}
-              >
-                <Text style={{ fontSize: 16, marginTop: 5 }}>
-                  Quên mật khẩu?
-                </Text>
+            <View style={{ flex: 4 }}>
+              <TouchableOpacity onPress={() => navigation.navigate("RequestResetPassword")}>
+                <Text style={{ fontSize: 16, marginTop: 5 }}>Quên mật khẩu?</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </View>
 
-      {/* other login methods */}
-      <View
-        style={{
-          flex: 4,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <View
-          style={{
-            width: "75%",
-            height: "100%",
-            alignItems: "center",
-          }}
-        >
+      {/* Login button */}
+      <View style={{ flex: 4, alignItems: "center", justifyContent: "center" }}>
+        <View style={{ width: "75%", height: "100%", alignItems: "center" }}>
           <TouchableOpacity
             style={{
               width: "100%",
               height: 50,
-              backgroundColor: "#5669fe",
+              backgroundColor: "#ff8a00",
               borderRadius: 10,
               justifyContent: "center",
               alignItems: "center",
               marginTop: 12,
             }}
-            onPress={() => navigation.navigate("TabNavigationContainer")}
+            onPress={handleLogin} // Call the login function here
           >
             <Text style={{ color: "white", fontSize: 18 }}>Đăng nhập</Text>
           </TouchableOpacity>
-          {/* <Text
-            style={{
-              color: "gray",
-              fontWeight: "bold",
-              fontSize: 18,
-              marginTop: 35,
-            }}
-          >
-            Hoặc
-          </Text>
-          <TouchableOpacity
-            style={{
-              width: "100%",
-              height: 50,
-              borderRadius: 10,
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: 12,
-              flexDirection: "row",
-              borderWidth: 1,
-              borderColor: "gray",
-            }}
-          >
-            <View
-              style={{
-                flex: 3,
-                alignItems: "center",
-              }}
-            >
-              <Image
-                source={require("../../img/imgAuth/google.png")}
-                style={{ width: 32, height: 32, resizeMode: "contain" }}
-              />
-            </View>
-            <View style={{ flex: 7 }}>
-              <Text style={{ fontSize: 18 }}>Đăng nhập với Google</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              width: "100%",
-              height: 50,
-              borderRadius: 10,
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: 12,
-              flexDirection: "row",
-              borderWidth: 1,
-              borderColor: "gray",
-            }}
-          >
-            <View
-              style={{
-                flex: 3,
-                alignItems: "center",
-              }}
-            >
-              <Image
-                source={require("../../img/imgAuth/fb.png")}
-                style={{ width: 32, height: 32, resizeMode: "contain" }}
-              />
-            </View>
-            <View style={{ flex: 7 }}>
-              <Text style={{ fontSize: 18 }}>Đăng nhập với Facebook</Text>
-            </View>
-          </TouchableOpacity> */}
+
           <Text style={{ fontSize: 16, marginTop: 8 }}>
             Bạn chưa có tài khoản?
             <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
-              <Text style={{ color: "#5669fe", fontSize: 16, marginLeft: 5 }}>
-                Đăng ký
-              </Text>
+              <Text style={{ color: "#5669fe", fontSize: 16, marginLeft: 5 }}>Đăng ký</Text>
             </TouchableOpacity>
           </Text>
         </View>

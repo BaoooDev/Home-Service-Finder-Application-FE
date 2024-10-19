@@ -10,18 +10,24 @@ import SignUp from "../view/Authen/SignUp";
 import ResetPassword from "../view/Authen/ResetPassword";
 import Verification from "../view/Authen/Verification";
 import RequestResetPassword from "../view/Authen/RequestResetPassword";
+import Log from "../view/Authen/log";
 
 // Import các màn hình chính
 import Account from "../view/Main/Account";
 import Home from "../view/Main/Home";
 import Activity from "../view/Main/ActivityScreen";
 
+import JobDetail from "../view/Main/JobDetail";
+
 // Import các màn hình dịch vụ
 import AddressSelection from '../view/Service/AddressSelection';
 import ServicePackage from '../view/Service/ServicePackage';
 import TimeSelection from '../view/Service/TimeSelection';
 import Confirmation from '../view/Service/Confirmation';
+import Success from '../view/Service/Success';
+import Rating from '../view/Service/Rating';
 
+import ServiceRating from '../view/Service/ServiceRating';
 
 
 const Tab = createBottomTabNavigator();
@@ -101,13 +107,15 @@ const AuthenNavigation = () => {
   );
 };
 
-const ServiceNavigation = () => {
+const ServiceNavigation = ({route }) => {
+  const { serviceType } = route.params;
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="AddressSelection"
         component={AddressSelection}
         options={{ headerShown: false }}
+        initialParams={{ serviceType }}
       />
       <Stack.Screen
         name="ServicePackage"
@@ -124,10 +132,26 @@ const ServiceNavigation = () => {
         component={Confirmation}
         options={{ headerShown: false }}
       />
+      
     </Stack.Navigator>
   );
 };
-
+const RatingScreen = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Rating"
+        component={Rating}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ServiceRating"
+        component={ServiceRating}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+};
 // Navigation Stack chính
 const NavigationStack = () => {
   return (
@@ -135,22 +159,42 @@ const NavigationStack = () => {
       <Stack.Navigator>
         {/* Điều hướng đến màn hình xác thực */}
         <Stack.Screen
+          name="Log"
+          component={Log}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="AuthenNavigation"
           component={AuthenNavigation}
           options={{ headerShown: false }}
         />
 
         {/* Điều hướng đến màn hình Tab chính */}
+       
         <Stack.Screen
           name="TabNavigationContainer"
           component={TabNavigationContainer}
           options={{ headerShown: false }}
         />
-
         {/* Điều hướng đến AddressSelection */}
         <Stack.Screen
           name="ServiceNavigation"
           component={ServiceNavigation}
+          options={{ headerShown: false }}
+        />
+          <Stack.Screen
+          name="Success"
+          component={Success}
+          options={{ headerShown: false }}
+        />
+         <Stack.Screen
+        name="JobDetails"
+        component={JobDetail}
+        options={{ headerShown: false }}
+      />
+       <Stack.Screen
+          name="RatingScreen"
+          component={RatingScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

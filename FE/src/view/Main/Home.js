@@ -6,15 +6,17 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const { width } = Dimensions.get('window');  // Lấy chiều rộng màn hình cho banner
 
 const HomeScreen = ({ navigation }) => {
+  const [serviceType, setServiceType] = useState('Dọn dẹp nhà');
+
   const [currentIndex, setCurrentIndex] = useState(0);  // Chỉ số banner hiện tại
   const scrollViewRef = useRef(null);  // Tạo tham chiếu cho ScrollView
   const banners = [  // Danh sách banner
     {
-      image: require('../../img/imgAuth/fb.png'),
+      image: require('../../img/service/banner1.jpg'),
       //text: 'New Feature - Chat in-app',
     },
     {
-      image: require('../../img/imgAuth/fb.png'),
+      image: require('../../img/service/banner2.jpg'),
       //text: 'Rebook your favorite Tasker!',
     },
   ];
@@ -47,13 +49,13 @@ const HomeScreen = ({ navigation }) => {
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
-          ref={scrollViewRef}  // Tham chiếu đến ScrollView
+          ref={scrollViewRef}
+          scrollEnabled={false}  // Disable horizontal scrolling
           style={styles.bannerScroll}
         >
           {banners.map((banner, index) => (
             <View key={index} style={styles.bannerItem}>
               <Image source={banner.image} style={styles.bannerImage} />
-              <Text style={styles.bannerText}>{banner.text}</Text>
             </View>
           ))}
         </ScrollView>
@@ -64,34 +66,45 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.viewAllText}>Xem tất cả</Text>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.servicesScroll}>
           <TouchableOpacity
-              style={styles.serviceItem}
-              onPress={() => navigation.navigate('ServiceNavigation', { service: 'Dọn dẹp nhà' })}
-            >
-              <Icon name="home" size={30} color="#ff8a00" />
-              <Text style={styles.serviceText}>Dọn dẹp nhà</Text>
-            </TouchableOpacity>
+            style={styles.serviceItem}
+            onPress={() => {
+              const service = 'Dọn dẹp nhà';  // Set the service type directly
+              navigation.navigate('ServiceNavigation', { serviceType: service }); // Pass serviceType to AddressSelection
+            }}
+          >
+            <Image source={require('../../img/service/hcicon.png')} style={styles.icon}/>
+            <Text style={styles.serviceText}>Dọn dẹp nhà</Text>
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.serviceItem}
-              onPress={() => navigation.navigate('ServiceNavigation', { service: 'Tổng vệ sinh' })}
-            >
-              <Icon name="cleaning-services" size={30} color="#ff8a00" />
-              <Text style={styles.serviceText}>Tổng vệ sinh</Text>
-            </TouchableOpacity>
 
-            <TouchableOpacity
-              style={styles.serviceItem}
-              onPress={() => navigation.navigate('ServiceNavigation', { service: 'Vệ sinh máy lạnh' })}
-            >
-              <Icon name="airplane" size={30} color="#ff8a00" />
-              <Text style={styles.serviceText}>Vệ sinh máy lạnh</Text>
-            </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.serviceItem}
+            onPress={() =>{
+              const service = 'Vệ sinh máy giặt';  // Set the service type directly
+              navigation.navigate('ServiceNavigation', { serviceType: service });
+            }}
+          >
+            <Image source={require('../../img/service/wsicon.png')} style={styles.icon} />
+            <Text style={styles.serviceText}>Vệ sinh máy giặt</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.serviceItem}
+            onPress={() =>{
+              const service = 'Vệ sinh máy lạnh';  // Set the service type directly
+              navigation.navigate('ServiceNavigation', { serviceType: service });
+            }}
+          >
+            <Image source={require('../../img/service/acicon.png')} style={styles.icon} />
+            <Text style={styles.serviceText}>Vệ sinh máy lạnh</Text>
+          </TouchableOpacity>
+
           </ScrollView>
         </View>
 
         {/* Thêm 4 dịch vụ ngang */}
         <View style={styles.servicesContainer}>
-          <Text style={styles.servicesTitle}>Các dịch vụ khác</Text>
+          <Text style={styles.servicesTitle}>Các dịch vụ sắp ra mắt</Text>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.servicesScroll}>
             <View style={styles.serviceItem}>
               <Icon name="car-sport-outline" size={30} color="#ff8a00" />
@@ -114,7 +127,7 @@ const HomeScreen = ({ navigation }) => {
 
         {/* Phần đánh giá từ khách hàng */}
         <View style={styles.reviewsContainer}>
-          <Text style={styles.reviewsTitle}>Đánh giá từ khách hàng</Text>
+          <Text style={styles.reviewsTitle}>Nhận xét từ khách hàng</Text>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.reviewsScroll}>
             <View style={styles.reviewItem}>
               <Text style={styles.reviewText}>"Dịch vụ rất tốt, nhân viên nhiệt tình!"</Text>
@@ -143,18 +156,33 @@ const styles = StyleSheet.create({
   headerPoints: { alignItems: 'flex-end' },
   pointsText: { color: '#fff', fontSize: 16 },
   bPointsText: { color: '#fff', fontSize: 12 },
-
+  icon: {
+    width:70, // Adjust the size based on your design
+    height: 65, // Adjust the size based on your design
+    resizeMode: 'contain', // Ensures the icon retains its aspect ratio
+  },
+  serviceItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+    padding: 10, // Adds some space around the item
+    borderRadius: 8, // Rounds the edges of the service item container
+    backgroundColor: '#f7f7f7', // Background color for the service item
+  },
+  serviceText: {
+    marginLeft: 15, // Adds space between the icon and the text
+    fontSize: 18, // Adjust the font size to your preference
+    fontWeight: '500', // Add some weight to the text
+    color: '#333', // Dark text color
+  },
   // Banner quảng cáo
   bannerScroll: {
     marginTop: 16,
   },
   bannerItem: {
-    width: width - 40,
-    marginLeft: 20,
-    marginRight: 20,
-    height: 150,
+    width: width,  // Full width for the banner
+    height: 200,
     backgroundColor: '#fff5e1',
-    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
@@ -163,17 +191,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     resizeMode: 'contain',
-    borderRadius: 10,
   },
-  bannerText: {
-    fontSize: 16,
-    color: '#ff8a00',
-    fontWeight: 'bold',
-    position: 'absolute',
-    bottom: 10,
-    left: 10,
-  },
-
   servicesContainer: { padding: 16 },
   servicesTitle: { fontSize: 18, fontWeight: 'bold' },
   viewAllText: { position: 'absolute', right: 16, top: 16, color: '#ff8a00' },

@@ -1,9 +1,12 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { Ionicons } from 'react-native-vector-icons';
+import { API_URL } from '@env';
+import * as SecureStore from "expo-secure-store";
 
+console.log(API_URL); 
 const Confirmation = ({ route, navigation }) => {
-  // Nhận thông tin từ các trang trước, sử dụng giá trị mặc định nếu không có
+  // Receive job data from previous screens
   const { 
     address = "Không có địa chỉ", 
     contactName = "Không có tên", 
@@ -14,6 +17,50 @@ const Confirmation = ({ route, navigation }) => {
     jobDetails = "Không có chi tiết công việc", 
     totalPrice = "0 VND" 
   } = route?.params || {};
+  
+  const { selectedTime, selectedService, selectedAddress, selectedDay, serviceType } = route.params;
+  const defaultTime = new Date(); // Current date and time
+  defaultTime.setHours(14); // Set the hour to 14 (2 PM)
+  defaultTime.setMinutes(0); // Set minutes to 0
+const hours = selectedService.match(/\d+/) ? parseInt(selectedService.match(/\d+/)[0], 10) : 0;
+
+  const handleJobSubmit = async () => {
+    // Prepare the data for the API
+    const jobData = {
+      address: selectedAddress.address,
+      duration_hours: hours,  // Change to correct selected time
+      service_type: serviceType,
+      scheduled_time: new Date(selectedDay.setHours(selectedTime.getHours(), selectedTime.getMinutes()))
+    .toISOString(),   // Fix scheduled_time based on current logic
+    };
+    console.log(jobData);
+
+    try {
+      const token = await SecureStore.getItemAsync("authToken");
+      if (!token) {
+        throw new Error("Token not found. Please login again.");
+      }
+
+      const response = await fetch(`${API_URL}/jobs/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(jobData),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        // Handle success, maybe navigate to another screen
+        navigation.navigate('Success');
+      } else {
+        alert('Failed to create job');
+      }
+    } catch (error) {
+      console.error('Error creating job:', error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -25,32 +72,35 @@ const Confirmation = ({ route, navigation }) => {
         <Text style={styles.headerTitle}>Xác nhận và thanh toán</Text>
       </View>
 
-      {/* Vị trí làm việc */}
+      {/* Job Location */}
       <Text style={styles.sectionTitle}>Vị trí làm việc</Text>
       <View style={styles.jobLocation}>
         <View>
-          <Text style={styles.addressTitle}>{address}</Text>
-          <Text style={styles.addressSubtitle}>{address}</Text>
-          <Text style={styles.contactInfo}>{contactName}</Text>
-          <Text style={styles.contactInfo}>{contactPhone}</Text>
+          <Text style={styles.addressTitle}>{selectedAddress.address}</Text>
+          <Text style={styles.addressSubtitle}>{selectedAddress.address}</Text>
+          <Text style={styles.contactInfo}>{selectedAddress.name}</Text>
+          <Text style={styles.contactInfo}>{selectedAddress.phone}</Text>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('AddressSelection')}>
-          <Text style={styles.changeButton}>Thay đổi</Text>
-        </TouchableOpacity>
       </View>
 
-      {/* Thông tin công việc */}
+      {/* Job Details */}
       <Text style={styles.sectionTitle}>Thông tin công việc</Text>
       <View style={styles.jobDetails}>
         <Text style={styles.detailText}>Thời gian làm việc</Text>
-        <Text style={styles.detailValue}>Ngày làm việc: {jobDate}</Text>
-        <Text style={styles.detailValue}>Làm trong {jobDuration}, {jobTime} đến {parseInt(jobTime) + parseInt(jobDuration)}:00</Text>
+        {/* Format the selectedDay */}
+        <Text style={styles.detailValue}>
+          Ngày làm việc: {selectedDay ? selectedDay.toLocaleDateString('vi-VN') : 'Chưa chọn ngày'}
+        </Text>
+        {/* Parse jobTime and jobDuration for calculation */}
+        <Text style={styles.detailValue}>
+          Làm trong {selectedService} giờ, từ {jobTime}:00 đến {parseInt(jobTime, 10) + parseInt(jobDuration, 10)}:00
+        </Text>
 
         <Text style={styles.detailText}>Chi tiết công việc</Text>
         <Text style={styles.detailValue}>Khối lượng công việc: {jobDetails}</Text>
       </View>
 
-      {/* Phương thức thanh toán */}
+      {/* Payment Method */}
       <Text style={styles.sectionTitle}>Phương thức thanh toán</Text>
       <View style={styles.paymentMethod}>
         <Text style={styles.methodText}>Tiền mặt</Text>
@@ -59,22 +109,23 @@ const Confirmation = ({ route, navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Tổng cộng */}
+      {/* Total */}
       <View style={styles.footer}>
         <Text style={styles.totalText}>Tổng cộng</Text>
         <Text style={styles.totalValue}>{totalPrice}</Text>
       </View>
 
-      {/* Nút Đăng việc */}
+      {/* Submit Button */}
       <TouchableOpacity
         style={styles.submitButton}
-        onPress={() => alert('Công việc đã được đăng thành công!')}
+        onPress={handleJobSubmit}
       >
         <Text style={styles.submitButtonText}>Đăng việc</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
 };
+
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, padding: 20, backgroundColor: '#fff' },
