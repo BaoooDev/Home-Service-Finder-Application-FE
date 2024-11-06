@@ -69,12 +69,13 @@ const HomeScreen = ({ navigation }) => {
             style={styles.serviceItem}
             onPress={() => {
               const service = 'Dọn dẹp nhà';  // Set the service type directly
-              navigation.navigate('ServiceNavigation', { serviceType: service }); // Pass serviceType to AddressSelection
+              navigation.navigate('ServiceNavigation', { serviceType: service });  // Navigate to ServiceNavigation
             }}
           >
             <Image source={require('../../img/service/hcicon.png')} style={styles.icon}/>
             <Text style={styles.serviceText}>Dọn dẹp nhà</Text>
           </TouchableOpacity>
+
 
 
           <TouchableOpacity
@@ -92,7 +93,7 @@ const HomeScreen = ({ navigation }) => {
             style={styles.serviceItem}
             onPress={() =>{
               const service = 'Vệ sinh máy lạnh';  // Set the service type directly
-              navigation.navigate('ServiceNavigation', { serviceType: service });
+              navigation.navigate('ACServiceNavigation', { serviceType: service });
             }}
           >
             <Image source={require('../../img/service/acicon.png')} style={styles.icon} />

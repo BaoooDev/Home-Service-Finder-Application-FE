@@ -171,7 +171,18 @@ const AddressSelection = ({ navigation, route }) => {
   renderItem={({ item }) => (
     <TouchableOpacity
       style={styles.addressContainer}
-      onPress={() => navigation.navigate('ServicePackage', { selectedAddress: item, serviceType })}
+      onPress={() => {
+        if (serviceType === 'Dọn dẹp nhà') {
+          navigation.navigate('ServicePackage', { selectedAddress: item, serviceType });
+        } else if (serviceType === 'Vệ sinh máy lạnh') {
+          navigation.navigate('ACService', { selectedAddress: item, serviceType });
+        } else if (serviceType === 'Vệ sinh máy giặt') {
+          navigation.navigate('ServicePackage', { selectedAddress: item, serviceType });
+        }
+      }}
+      
+      
+      
     >
       <View style={styles.addressDetails}>
         <Text style={styles.addressTitle}>{item.address}</Text>

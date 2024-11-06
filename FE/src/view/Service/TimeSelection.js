@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 const TimeSelection = ({ navigation, route }) => {
-  const { selectedService, selectedAddress, serviceType } = route.params;
+  const { selectedOption,quantity,selectedService, selectedAddress, serviceType } = route.params;
   const [selectedTime, setSelectedTime] = useState(new Date()); // Initialize with current time
   const [isWeekly, setIsWeekly] = useState(false);
   const [note, setNote] = useState('');
@@ -141,7 +141,8 @@ const TimeSelection = ({ navigation, route }) => {
         <Text style={styles.totalText}>240,000 VND/3h</Text>
         <TouchableOpacity
           style={styles.nextButton}
-          onPress={() => navigation.navigate('Confirmation', { selectedTime, selectedDay, selectedService, selectedAddress, serviceType })}
+          onPress={() => navigation.navigate('Confirmation', { selectedOption,
+            quantity,selectedTime, selectedDay, selectedService, selectedAddress, serviceType })}
         >
           <Text style={styles.nextButtonText}>Tiếp theo</Text>
         </TouchableOpacity>

@@ -26,7 +26,7 @@ import TimeSelection from '../view/Service/TimeSelection';
 import Confirmation from '../view/Service/Confirmation';
 import Success from '../view/Service/Success';
 import Rating from '../view/Service/Rating';
-
+import ACService from "../view/Service/ACservice";
 import ServiceRating from '../view/Service/ServiceRating';
 
 
@@ -119,7 +119,7 @@ const ServiceNavigation = ({route }) => {
       />
       <Stack.Screen
         name="ServicePackage"
-        component={ServicePackage}  // Đảm bảo bạn đã khai báo đúng
+        component={ServicePackage}  
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -132,10 +132,39 @@ const ServiceNavigation = ({route }) => {
         component={Confirmation}
         options={{ headerShown: false }}
       />
-      
     </Stack.Navigator>
   );
 };
+
+const ACServiceNavigation = ({route }) => {
+  const { serviceType } = route.params;
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="AddressSelection"
+        component={AddressSelection}
+        options={{ headerShown: false }}
+        initialParams={{ serviceType }}  // Pass the service type as initial params
+      />
+      <Stack.Screen
+        name="ACService"
+        component={ACService}  // This screen handles the AC cleaning process
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="TimeSelection"
+        component={TimeSelection}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Confirmation"
+        component={Confirmation}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+};
+
 const RatingScreen = () => {
   return (
     <Stack.Navigator>
@@ -180,6 +209,11 @@ const NavigationStack = () => {
         <Stack.Screen
           name="ServiceNavigation"
           component={ServiceNavigation}
+          options={{ headerShown: false }}
+        />
+         <Stack.Screen
+          name="ACServiceNavigation"
+          component={ACServiceNavigation}
           options={{ headerShown: false }}
         />
           <Stack.Screen

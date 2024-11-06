@@ -38,7 +38,7 @@ const SignIn = ({ navigation }) => {
     }
   
     try {
-      const response = await fetch(`${API_URL}/login/client`, {
+      const response = await fetch(`${API_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ const SignIn = ({ navigation }) => {
           }}
         />
         <Text style={{ fontWeight: "bold", fontSize: 35, marginTop: 5 }}>
-          TKBEE
+          TBKEE
         </Text>
       </View>
 
