@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image } from 'react-native';
 
-const LogScreen = ({ navigation }) => {
+const Start = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -26,7 +26,7 @@ const LogScreen = ({ navigation }) => {
         {/* Nút cho Nhân viên */}
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('EmployeeScreen')} // Chuyển đến màn hình nhân viên
+          onPress={() => navigation.navigate('EmployeeNavigation')} // Chuyển đến màn hình nhân viên
         >
           <Text style={styles.buttonText}>Nhân viên</Text>
         </TouchableOpacity>
@@ -79,4 +79,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LogScreen;
+export default Start;

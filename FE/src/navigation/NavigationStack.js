@@ -10,7 +10,13 @@ import SignUp from "../view/Authen/SignUp";
 import ResetPassword from "../view/Authen/ResetPassword";
 import Verification from "../view/Authen/Verification";
 import RequestResetPassword from "../view/Authen/RequestResetPassword";
-import Log from "../view/Authen/log";
+import Start from '../view/Authen/Start'
+
+import EmployeeSignIn from "../view/Employee/SignIn";
+import EmployeeSignUp from "../view/Employee/SignUp";
+import EmployeeResetPassword from "../view/Employee/ResetPassword";
+import EmployeeVerification from "../view/Employee/Verification";
+import EmployeeRequestResetPassword from "../view/Employee/RequestResetPassword";
 
 // Import các màn hình chính
 import Account from "../view/Main/Account";
@@ -107,6 +113,38 @@ const AuthenNavigation = () => {
   );
 };
 
+const EmployeeNavigation = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="EmployeeSignIn"
+        component={EmployeeSignIn}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EmployeeSignUp"
+        component={EmployeeSignUp}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EmployeeVerification"
+        component={EmployeeVerification}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EmployeeRequestResetPassword"
+        component={EmployeeRequestResetPassword}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EmployeeResetPassword"
+        component={EmployeeResetPassword}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+};
+
 const ServiceNavigation = ({route }) => {
   const { serviceType } = route.params;
   return (
@@ -188,13 +226,18 @@ const NavigationStack = () => {
       <Stack.Navigator>
         {/* Điều hướng đến màn hình xác thực */}
         <Stack.Screen
-          name="Log"
-          component={Log}
+          name="Start"
+          component={Start}
           options={{ headerShown: false }}
         />
         <Stack.Screen
           name="AuthenNavigation"
           component={AuthenNavigation}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="EmployeeNavigation"
+          component={EmployeeNavigation}
           options={{ headerShown: false }}
         />
 

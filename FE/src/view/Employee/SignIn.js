@@ -6,9 +6,7 @@ import { Alert, Image, Switch, Text, TextInput, TouchableOpacity, View } from 'r
 // Import API_URL from .env
 import { API_URL } from '@env'
 
-console.log(API_URL)
-
-const SignIn = ({ navigation }) => {
+const EmployeeSignIn = ({ navigation }) => {
   // Switch
   const [isEnabled, setIsEnabled] = useState(false)
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState)
@@ -73,19 +71,18 @@ const SignIn = ({ navigation }) => {
             }}
           />
         </TouchableOpacity>
-        <Text style={{ fontWeight: 'bold', fontSize: 35, marginTop: 5 }}>TBKEE</Text>
+        <Text style={{ fontWeight: 'bold', fontSize: 28, marginTop: 5 }}>TBKEE</Text>
       </View>
 
       {/* Sign in form */}
       <View style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <View style={{ width: '90%', paddingTop: 10 }}>
-          <Text style={{ fontWeight: 'bold', fontSize: 26 }}>Đăng nhập</Text>
 
           {/* Email input */}
           <View
             style={{
               width: '100%',
-              height: 55,
+              height: 50,
               borderWidth: 1,
               borderRadius: 12,
               marginTop: 20,
@@ -122,7 +119,7 @@ const SignIn = ({ navigation }) => {
           <View
             style={{
               width: '100%',
-              height: 55,
+              height: 50,
               borderWidth: 1,
               borderRadius: 12,
               marginTop: 18,
@@ -198,7 +195,7 @@ const SignIn = ({ navigation }) => {
               </View>
             </View>
             <View style={{ flex: 4 }}>
-              <TouchableOpacity onPress={() => navigation.navigate('RequestResetPassword')}>
+              <TouchableOpacity onPress={() => navigation.navigate('EmployeeRequestResetPassword')}>
                 <Text style={{ fontSize: 16, marginTop: 5 }}>Quên mật khẩu?</Text>
               </TouchableOpacity>
             </View>
@@ -233,7 +230,7 @@ const SignIn = ({ navigation }) => {
             }}
           >
             <Text style={{ fontSize: 16 }}>Bạn chưa có tài khoản?</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+            <TouchableOpacity onPress={() => navigation.navigate('EmployeeSignUp')}>
               <Text style={{ color: '#5669fe', fontSize: 16, marginLeft: 5 }}>Đăng ký</Text>
             </TouchableOpacity>
           </View>
@@ -243,4 +240,4 @@ const SignIn = ({ navigation }) => {
   )
 }
 
-export default SignIn
+export default EmployeeSignIn
