@@ -47,7 +47,7 @@ const EmployeeSignUp = ({ navigation }) => {
 
       if (response.ok) {
         await SecureStore.setItemAsync('authToken', result.token.toString())
-        navigation.navigate('TabNavigationContainer')
+        navigation.navigate('EmployeeTabNavigationContainer')
       } else {
         Alert.alert('Đăng ký thất bại', result.msg)
       }
