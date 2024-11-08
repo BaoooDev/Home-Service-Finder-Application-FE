@@ -11,42 +11,42 @@ const EmployeeHomeScreen = ({ navigation }) => {
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchJobs = async () => {
-      setLoading(true)
-      try {
-        const token = await SecureStore.getItemAsync('authToken')
-        if (!token) {
-          throw new Error('Token not found. Please login again.')
-        }
-
-        const endpoint =
-          activeTab === 1 ? `${API_URL}/worker_jobs?status=pending` : `${API_URL}/worker_jobs`
-
-        const response = await fetch(endpoint, {
-          method: 'GET',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        })
-
-        const data = await response.json()
-
-        if (response.ok) {
-          setJobs(data.results)
-        } else {
-          setJobs([])
-        }
-      } catch (error) {
-        console.error('Error fetching jobs:', error)
-        setJobs([])
-      } finally {
-        setLoading(false)
+  const fetchJobs = async () => {
+    setLoading(true)
+    try {
+      const token = await SecureStore.getItemAsync('authToken')
+      if (!token) {
+        throw new Error('Token not found. Please login again.')
       }
-    }
 
+      const endpoint =
+        activeTab === 1 ? `${API_URL}/worker_jobs?status=pending` : `${API_URL}/worker_jobs`
+
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setJobs(data.results)
+      } else {
+        setJobs([])
+      }
+    } catch (error) {
+      console.error('Error fetching jobs:', error)
+      setJobs([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
     fetchJobs()
   }, [activeTab])
 
