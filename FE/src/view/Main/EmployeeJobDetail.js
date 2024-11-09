@@ -4,15 +4,6 @@ import React from 'react'
 import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native'
 import { Avatar, Button, Card, Paragraph } from 'react-native-paper'
 
-// Temporary mock worker data
-const mockWorker = {
-  _id: 'worker123',
-  name: 'Nguyen Van A',
-  phone: '0912345678',
-  avatar: 'https://via.placeholder.com/48', // Placeholder for worker's avatar
-  rating: 4.5, // Example rating
-}
-
 const JobDetail = ({ navigation, route }) => {
   const { job } = route.params // assuming job data is passed via route params
   const { colors } = useTheme() // Get theme colors
@@ -73,20 +64,20 @@ const JobDetail = ({ navigation, route }) => {
           <Card style={styles.card}>
             <Card.Title
               title="Thông tin người giúp việc"
-              left={(props) => <Avatar.Image size={48} source={{ uri: mockWorker.avatar }} />}
+              left={(props) => <Avatar.Image size={48} source={{ uri: 'https://via.placeholder.com/48' }} />}
             />
             <Card.Content>
               <View style={styles.row}>
                 <MaterialIcons name="person" size={20} color={colors.text} />
-                <Paragraph style={styles.subText}>Tên: {mockWorker.name}</Paragraph>
+                <Paragraph style={styles.subText}>Tên: {job.worker.full_name}</Paragraph>
               </View>
               <View style={styles.row}>
                 <MaterialIcons name="phone" size={20} color={colors.text} />
-                <Paragraph style={styles.subText}>Số điện thoại: {mockWorker.phone}</Paragraph>
+                <Paragraph style={styles.subText}>Số điện thoại: {job.worker.phone_number}</Paragraph>
               </View>
               <View style={styles.row}>
                 <MaterialIcons name="star" size={20} color={colors.text} />
-                <Paragraph style={styles.subText}>Đánh giá: {mockWorker.rating} ⭐</Paragraph>
+                <Paragraph style={styles.subText}>Đánh giá: {job.worker.worker_profile.rating} ⭐</Paragraph>
               </View>
             </Card.Content>
           </Card>
