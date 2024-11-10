@@ -1,15 +1,14 @@
 import { API_URL } from '@env'
-import { FontAwesome5, MaterialIcons } from '@expo/vector-icons' // Import icons from expo
 import * as SecureStore from 'expo-secure-store'
 import React, { useEffect, useState } from 'react'
-import { FlatList, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native'
-import { ActivityIndicator, Button, Card, Paragraph } from 'react-native-paper'
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Avatar, Card } from 'react-native-paper'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const EmployeeMessage = ({ navigation }) => {
   const [activeTab, setActiveTab] = useState(1)
-  const [notifications, setNotications] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [notifications, setNotifications] = useState([])
+  const [loading, setLoading] = useState(false)
 
   const fetchNotifications = async () => {
     setLoading(true)
@@ -31,7 +30,7 @@ const EmployeeMessage = ({ navigation }) => {
       const data = await response.json()
 
       if (response.ok) {
-        console.log(data)
+        setNotifications(data.results)
       }
     } catch (error) {
       console.error('Error fetching jobs:', error)
@@ -63,49 +62,40 @@ const EmployeeMessage = ({ navigation }) => {
       )
     }
 
-    if (notifications.length === 0) {
+    if (activeTab === 2) {
+      if (notifications.length > 0) {
+        return (
+          <FlatList
+            data={notifications}
+            keyExtractor={(item) => item._id}
+            renderItem={({ item }) => (
+              <Card style={styles.card}>
+                <Card.Title
+                  title={item.sender.full_name}
+                  subtitle={item.message}
+                  left={(props) => (
+                    <Avatar.Image size={48} source={{ uri: 'https://via.placeholder.com/48' }} />
+                  )}
+                />
+              </Card>
+            )}
+            contentContainerStyle={{ marginTop: 8 }}
+          />
+        )
+      } else {
+        return (
+          <View style={styles.noJobsContainer}>
+            <Text style={styles.noJobsText}>Hiện không có thông báo nào</Text>
+          </View>
+        )
+      }
+    } else {
       return (
         <View style={styles.noJobsContainer}>
-          <Text style={styles.noJobsText}>
-            {activeTab === 1 ? 'Hiện tại không có tin nhắn nào' : 'Hiện không có thông báo nào'}
-          </Text>
+          <Text style={styles.noJobsText}>Hiện không có tin nhắn nào</Text>
         </View>
       )
     }
-
-    return (
-      <FlatList
-        data={notifications}
-        keyExtractor={(item) => item._id}
-        renderItem={({ item }) => (
-          <Card style={styles.card}>
-            <Card.Title title={item.service_type} subtitle={item.address} />
-            <Card.Content>
-              <div></div>
-            </Card.Content>
-            <Card.Actions>
-              <Button
-                mode="contained"
-                onPress={() => renderEmployeeJobDetail(item)}
-                style={styles.detailButton}
-              >
-                Xem chi tiết
-              </Button>
-              {item.status === 'pending' && (
-                <Button
-                  mode="contained"
-                  onPress={() => handleReceiveJob(item)}
-                  style={styles.ratingButton}
-                >
-                  Nhận công việc
-                </Button>
-              )}
-            </Card.Actions>
-          </Card>
-        )}
-        contentContainerStyle={{ marginTop: 8 }}
-      />
-    )
   }
 
   return (

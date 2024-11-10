@@ -47,7 +47,7 @@ const EmployeeSignUp = ({ navigation }) => {
 
       if (response.ok) {
         await SecureStore.setItemAsync('authToken', result.token.toString())
-        navigation.navigate('EmployeeTabNavigationContainer')
+        navigation.navigate('EmployeeServiceType')
       } else {
         Alert.alert('Đăng ký thất bại', result.msg)
       }
@@ -80,7 +80,6 @@ const EmployeeSignUp = ({ navigation }) => {
           phone: '',
           password: '',
           confirmPassword: '',
-          address: '',
         }}
         validationSchema={SignUpSchema}
         onSubmit={(values) => handleSignUp(values)}
@@ -112,21 +111,6 @@ const EmployeeSignUp = ({ navigation }) => {
                   onChangeText={handleChange('full_name')}
                   onBlur={handleBlur('full_name')}
                   value={values.full_name}
-                />
-              </View>
-              {errors.full_name && touched.full_name && (
-                <Text style={styles.errorText}>{errors.full_name}</Text>
-              )}
-
-              {/* Address Input */}
-              <View style={styles.inputContainer}>
-                <Ionicons name="business-outline" size={25} color="black" style={styles.icon} />
-                <TextInput
-                  placeholder="Nhập địa chỉ của bạn"
-                  style={styles.input}
-                  onChangeText={handleChange('address')}
-                  onBlur={handleBlur('address')}
-                  value={values.address}
                 />
               </View>
               {errors.full_name && touched.full_name && (

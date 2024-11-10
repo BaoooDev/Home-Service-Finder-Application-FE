@@ -117,7 +117,7 @@ const EmployeeHomeScreen = ({ navigation }) => {
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <Card style={styles.card}>
-            <Card.Title title={item.service_type} subtitle={item.address} />
+            <Card.Title title={item.service.name} subtitle={item.address} />
             <Card.Content>
               <View style={styles.row}>
                 <MaterialIcons name="date-range" size={20} color="#666" />

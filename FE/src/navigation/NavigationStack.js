@@ -26,6 +26,7 @@ import JobDetail from '../view/Main/JobDetail'
 import EmployeeHomeScreen from '../view/Main/EmployeeHomeScreen'
 import EmployeeJobDetail from '../view/Main/EmployeeJobDetail'
 import EmployeeMessage from '../view/Main/EmployeeMessage'
+import EmployeeServiceType from '../view/Main/EmployeeServiceType'
 
 // Import các màn hình dịch vụ
 import AddressSelection from '../view/Service/AddressSelection'
@@ -255,6 +256,12 @@ const NavigationStack = () => {
         <Stack.Screen
           name="EmployeeTabNavigationContainer"
           component={EmployeeTabNavigationContainer}
+          options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+          name="EmployeeServiceType"
+          component={EmployeeServiceType}
           options={{ headerShown: false }}
         />
 

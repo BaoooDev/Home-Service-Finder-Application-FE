@@ -46,7 +46,7 @@ const EmployeeSignIn = ({ navigation }) => {
         // Store token and userId as strings
         await SecureStore.setItemAsync('authToken', result.token.toString())
         // Navigate to the next screen
-        navigation.navigate('EmployeeTabNavigationContainer')
+        navigation.navigate('EmployeeServiceType')
       } else {
         Alert.alert('Đăng nhập thất bại', result.msg)
       }
