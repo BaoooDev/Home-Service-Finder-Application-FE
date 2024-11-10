@@ -50,6 +50,23 @@ const EmployeeHomeScreen = ({ navigation }) => {
     fetchJobs()
   }, [activeTab])
 
+  const renderJobStatus = (status) => {
+    switch (status) {
+      case 'pending':
+        return <Text style={styles.statusPending}>Đang chờ người khác nhận việc...</Text>
+      case 'accepted':
+        return <Text style={styles.statusAccepted}>Đã có người nhận việc</Text>
+      case 'in_progress':
+        return <Text style={styles.statusInProgress}>Đang dọn dẹp</Text>
+      case 'completed':
+        return <Text style={styles.statusCompleted}>Công việc đã hoàn thành</Text>
+      case 'canceled':
+        return <Text style={styles.statusCanceled}>Công việc đã bị hủy</Text>
+      default:
+        return <Text style={styles.statusUnknown}>Trạng thái không xác định</Text>
+    }
+  }
+
   const handleReceiveJob = async (item) => {
     Alert.alert('Xác nhận hủy', 'Bạn chắc chắn muốn nhận công việc này?', [
       { text: 'Không', style: 'cancel' },
@@ -81,6 +98,46 @@ const EmployeeHomeScreen = ({ navigation }) => {
     ])
   }
 
+  const handleChangeStatus = async (item) => {
+    Alert.alert(
+      'Xác nhận hủy',
+      `Bạn chắc chắn muốn ${
+        item.status === 'accepted' ? 'bắt đầu' : 'hoàn thành'
+      } công việc này?`,
+      [
+        { text: 'Không', style: 'cancel' },
+        {
+          text: 'Có',
+          onPress: async () => {
+            try {
+              const token = await SecureStore.getItemAsync('authToken')
+              const response = await fetch(`${API_URL}/jobs/${item._id}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  status: item.status === 'accepted' ? 'in_progress' : 'completed',
+                }),
+              })
+
+              const data = await response.json()
+
+              if (response.ok) {
+                fetchJobs()
+              } else {
+                console.error('Failed to cancel the job:', data.message)
+              }
+            } catch (error) {
+              console.error('Error cancelling job:', error)
+            }
+          },
+        },
+      ]
+    )
+  }
+
   const renderEmployeeJobDetail = (job) => {
     navigation.navigate('EmployeeJobDetail', { job })
   }
@@ -96,7 +153,7 @@ const EmployeeHomeScreen = ({ navigation }) => {
             height: '100%',
           }}
         >
-          <ActivityIndicator animating={true} color="#ff8a00" />
+          <ActivityIndicator animating={true} color="#5A62D5" />
         </View>
       )
     }
@@ -137,6 +194,8 @@ const EmployeeHomeScreen = ({ navigation }) => {
                 <FontAwesome5 name="money-bill-wave" size={20} color="#666" />
                 <Paragraph style={styles.paragraphText}>Giá: {item.price} VND</Paragraph>
               </View>
+
+              <View style={styles.row}>{renderJobStatus(item.status)}</View>
             </Card.Content>
             <Card.Actions>
               <Button
@@ -144,15 +203,33 @@ const EmployeeHomeScreen = ({ navigation }) => {
                 onPress={() => renderEmployeeJobDetail(item)}
                 style={styles.detailButton}
               >
-                Xem chi tiết
+                Chi tiết
               </Button>
               {item.status === 'pending' && (
                 <Button
                   mode="contained"
                   onPress={() => handleReceiveJob(item)}
-                  style={styles.ratingButton}
+                  buttonColor="#5A62D5"
                 >
-                  Nhận công việc
+                  Nhận việc
+                </Button>
+              )}
+              {item.status === 'accepted' && (
+                <Button
+                  mode="contained"
+                  onPress={() => handleChangeStatus(item)}
+                  buttonColor="#5A62D5"
+                >
+                  Bắt đầu
+                </Button>
+              )}
+              {item.status === 'in_progress' && (
+                <Button
+                  mode="contained"
+                  onPress={() => handleChangeStatus(item)}
+                  buttonColor="#5A62D5"
+                >
+                  Hoàn thành
                 </Button>
               )}
             </Card.Actions>
@@ -213,10 +290,10 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     borderBottomWidth: 2,
-    borderBottomColor: '#ff8a00',
+    borderBottomColor: '#5A62D5',
   },
   tabText: { fontSize: 16, color: '#aaa' },
-  activeTabText: { color: '#ff8a00', fontWeight: 'bold' },
+  activeTabText: { color: '#5A62D5', fontWeight: 'bold' },
 
   card: {
     margin: 16,
@@ -239,9 +316,6 @@ const styles = StyleSheet.create({
   cancelButton: {
     backgroundColor: '#FF5252',
   },
-  ratingButton: {
-    backgroundColor: '#FF8A00',
-  },
   noJobsContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -252,32 +326,32 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   statusPending: {
-    color: '#FF8A00',
+    color: '#5A62D5',
     fontWeight: 'bold',
     marginTop: 10,
   },
   statusAccepted: {
-    color: '#FF8A00',
+    color: '#5A62D5',
     fontWeight: 'bold',
     marginTop: 10,
   },
   statusInProgress: {
-    color: '#FF8A00',
+    color: '#5A62D5',
     fontWeight: 'bold',
     marginTop: 10,
   },
   statusCompleted: {
-    color: '#FF8A00',
+    color: '#5A62D5',
     fontWeight: 'bold',
     marginTop: 10,
   },
   statusCanceled: {
-    color: '#FF8A00',
+    color: '#5A62D5',
     fontWeight: 'bold',
     marginTop: 10,
   },
   statusUnknown: {
-    color: '#FF8A00',
+    color: '#5A62D5',
     fontWeight: 'bold',
     marginTop: 10,
   },

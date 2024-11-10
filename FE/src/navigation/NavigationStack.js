@@ -28,6 +28,7 @@ import EmployeeJobDetail from '../view/Main/EmployeeJobDetail'
 import EmployeeMessage from '../view/Main/EmployeeMessage'
 import EmployeeServiceType from '../view/Main/EmployeeServiceType'
 import EmployeeBenefit from '../view/Main/EmployeeBenefit'
+import EmployeeAccount from '../view/Main/EmployeeAccount'
 
 // Import các màn hình dịch vụ
 import AddressSelection from '../view/Service/AddressSelection'
@@ -116,6 +117,17 @@ const EmployeeTabNavigationContainer = () => {
           tabBarLabel: 'Phúc lợi',
           tabBarIcon: ({ color, size }) => {
             return <Ionicons name="globe-outline" size={size} color={color} />
+          },
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name="EmployeeAccount"
+        component={EmployeeAccount}
+        options={{
+          tabBarLabel: 'Tài khoản',
+          tabBarIcon: ({ color, size }) => {
+            return <Ionicons name="person-outline" size={size} color={color} />
           },
           headerShown: false,
         }}

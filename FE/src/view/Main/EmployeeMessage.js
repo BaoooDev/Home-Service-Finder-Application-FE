@@ -57,7 +57,7 @@ const EmployeeMessage = ({ navigation }) => {
             height: '100%',
           }}
         >
-          <ActivityIndicator animating={true} color="#ff8a00" />
+          <ActivityIndicator animating={true} color="#5A62D5" />
         </View>
       )
     }
@@ -148,10 +148,10 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     borderBottomWidth: 2,
-    borderBottomColor: '#ff8a00',
+    borderBottomColor: '#5A62D5',
   },
   tabText: { fontSize: 16, color: '#aaa' },
-  activeTabText: { color: '#ff8a00', fontWeight: 'bold' },
+  activeTabText: { color: '#5A62D5', fontWeight: 'bold' },
 
   card: {
     margin: 16,
@@ -174,9 +174,6 @@ const styles = StyleSheet.create({
   cancelButton: {
     backgroundColor: '#FF5252',
   },
-  ratingButton: {
-    backgroundColor: '#FF8A00',
-  },
   noJobsContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -187,32 +184,32 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   statusPending: {
-    color: '#FF8A00',
+    color: '#5A62D5',
     fontWeight: 'bold',
     marginTop: 10,
   },
   statusAccepted: {
-    color: '#FF8A00',
+    color: '#5A62D5',
     fontWeight: 'bold',
     marginTop: 10,
   },
   statusInProgress: {
-    color: '#FF8A00',
+    color: '#5A62D5',
     fontWeight: 'bold',
     marginTop: 10,
   },
   statusCompleted: {
-    color: '#FF8A00',
+    color: '#5A62D5',
     fontWeight: 'bold',
     marginTop: 10,
   },
   statusCanceled: {
-    color: '#FF8A00',
+    color: '#5A62D5',
     fontWeight: 'bold',
     marginTop: 10,
   },
   statusUnknown: {
-    color: '#FF8A00',
+    color: '#5A62D5',
     fontWeight: 'bold',
     marginTop: 10,
   },
