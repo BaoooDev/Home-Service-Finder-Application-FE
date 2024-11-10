@@ -27,6 +27,7 @@ import EmployeeHomeScreen from '../view/Main/EmployeeHomeScreen'
 import EmployeeJobDetail from '../view/Main/EmployeeJobDetail'
 import EmployeeMessage from '../view/Main/EmployeeMessage'
 import EmployeeServiceType from '../view/Main/EmployeeServiceType'
+import EmployeeBenefit from '../view/Main/EmployeeBenefit'
 
 // Import các màn hình dịch vụ
 import AddressSelection from '../view/Service/AddressSelection'
@@ -104,6 +105,17 @@ const EmployeeTabNavigationContainer = () => {
           tabBarLabel: 'Hộp thư',
           tabBarIcon: ({ color, size }) => {
             return <Ionicons name="document-text-outline" size={size} color={color} />
+          },
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name="EmployeeBenefit"
+        component={EmployeeBenefit}
+        options={{
+          tabBarLabel: 'Phúc lợi',
+          tabBarIcon: ({ color, size }) => {
+            return <Ionicons name="globe-outline" size={size} color={color} />
           },
           headerShown: false,
         }}
@@ -279,13 +291,13 @@ const NavigationStack = () => {
         <Stack.Screen name="Success" component={Success} options={{ headerShown: false }} />
         <Stack.Screen name="JobDetails" component={JobDetail} options={{ headerShown: false }} />
         <Stack.Screen
-          name="EmployeeJobDetail"
-          component={EmployeeJobDetail}
+          name="RatingScreen"
+          component={RatingScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="RatingScreen"
-          component={RatingScreen}
+          name="EmployeeJobDetail"
+          component={EmployeeJobDetail}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
