@@ -30,6 +30,7 @@ import EmployeeServiceType from '../view/Main/EmployeeServiceType'
 import EmployeeBenefit from '../view/Main/EmployeeBenefit'
 import EmployeeAccount from '../view/Main/EmployeeAccount'
 import EmployeeReport from '../view/Main/EmployeeReport'
+import EmployeeHistories from '../view/Main/EmployeeHistories'
 
 // Import các màn hình dịch vụ
 import AddressSelection from '../view/Service/AddressSelection'
@@ -316,6 +317,11 @@ const NavigationStack = () => {
         <Stack.Screen
           name="EmployeeReport"
           component={EmployeeReport}
+          options={{ headerShown: false }}
+        />
+         <Stack.Screen
+          name="EmployeeHistories"
+          component={EmployeeHistories}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

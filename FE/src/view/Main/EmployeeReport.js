@@ -14,11 +14,11 @@ import * as SecureStore from 'expo-secure-store'
 import React, { useState, useEffect } from 'react'
 import { API_URL } from '@env'
 
-export default function WeeklyReport({ navigation }) {
+export default function EmployeeReport({ navigation }) {
   const [loading, setLoading] = useState(false)
   const [dashboard, setDashboard] = useState()
 
-  const fetchJobHistories = async () => {
+  const getDashboard = async () => {
     setLoading(true)
     try {
       const token = await SecureStore.getItemAsync('authToken')
@@ -47,7 +47,7 @@ export default function WeeklyReport({ navigation }) {
   }
 
   useEffect(() => {
-    fetchJobHistories()
+    getDashboard()
   }, [])
 
   return !loading ? (
@@ -56,7 +56,7 @@ export default function WeeklyReport({ navigation }) {
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back-outline" size={30} color="black" />
+            <Ionicons name="arrow-back-outline" size={30} color="white" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Báo cáo tháng</Text>
         </View>
