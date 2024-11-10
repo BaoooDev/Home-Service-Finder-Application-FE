@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import React, { useEffect, useState } from 'react'
 import { ActivityIndicator } from 'react-native-paper'
 import { API_URL } from '@env'
-const EmployeeAccountScreen = () => {
+const EmployeeAccountScreen = ({ navigation }) => {
   const [me, setMe] = useState()
   const [loading, setLoading] = useState(false)
   const getMe = async () => {
@@ -24,7 +24,6 @@ const EmployeeAccountScreen = () => {
       })
 
       const data = await response.json()
-      console.log(data)
       if (response.ok) {
         setMe(data)
       }
@@ -73,7 +72,7 @@ const EmployeeAccountScreen = () => {
       {/* Menu Options */}
       <ScrollView contentContainerStyle={styles.menuContainer}>
         {/* Weekly Report Section */}
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('EmployeeReport')}>
           <Text style={styles.menuTitle}>Báo cáo tháng</Text>
           <View>
             <Text style={styles.menuSubtitle}>Công việc đã hoàn thành: {me?.work_done}</Text>
