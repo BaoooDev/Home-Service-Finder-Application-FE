@@ -68,7 +68,7 @@ const EmployeeHomeScreen = ({ navigation }) => {
   }
 
   const handleReceiveJob = async (item) => {
-    Alert.alert('Xác nhận hủy', 'Bạn chắc chắn muốn nhận công việc này?', [
+    Alert.alert('Xác nhận', 'Bạn chắc chắn muốn nhận công việc này?', [
       { text: 'Không', style: 'cancel' },
       {
         text: 'Có',
@@ -100,7 +100,7 @@ const EmployeeHomeScreen = ({ navigation }) => {
 
   const handleChangeStatus = async (item) => {
     Alert.alert(
-      'Xác nhận hủy',
+      'Xác nhận',
       `Bạn chắc chắn muốn ${
         item.status === 'accepted' ? 'bắt đầu' : 'hoàn thành'
       } công việc này?`,
