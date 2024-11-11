@@ -65,7 +65,7 @@ const EmployeeAccountScreen = ({ navigation }) => {
         <Text style={styles.balanceTitle}>Tài khoản chính</Text>
         <Text style={styles.balanceAmount}>{me?.user?.balance}₫</Text>
         <Text style={styles.promoBalance}>
-          Tài khoản khuyến mãi: <Text style={styles.promoAmount}>0₫</Text>
+          Tài khoản ký quỹ: <Text style={styles.promoAmount}>0₫</Text>
         </Text>
       </View>
 
