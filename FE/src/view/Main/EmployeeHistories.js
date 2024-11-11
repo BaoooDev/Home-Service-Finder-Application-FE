@@ -1,10 +1,9 @@
 import { API_URL } from '@env'
-import { Ionicons } from '@expo/vector-icons'
+import { Ionicons, MaterialIcons } from '@expo/vector-icons'
 import * as SecureStore from 'expo-secure-store'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, FlatList } from 'react-native'
 import { Card, ActivityIndicator, Paragraph } from 'react-native-paper'
-import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 
 export default function EmployeeHistories({ navigation }) {
   const [loading, setLoading] = useState(false)
@@ -74,19 +73,19 @@ export default function EmployeeHistories({ navigation }) {
                   </Paragraph>
                 </View>
                 <View style={styles.row}>
-                  <MaterialIcons name="date-range" size={20} color="#666" />
+                  <MaterialIcons name="timer" size={20} color="#666" />
                   <Paragraph style={styles.paragraphText}>
                     Thời gian làm việc: {item.duration_hours}
                   </Paragraph>
                 </View>
                 <View style={styles.row}>
-                  <MaterialIcons name="date-range" size={20} color="#666" />
+                  <MaterialIcons name="schedule" size={20} color="#666" />
                   <Paragraph style={styles.paragraphText}>
                     Thời gian kết thúc: {item.completion_time}
                   </Paragraph>
                 </View>
                 <View style={styles.row}>
-                  <MaterialIcons name="date-range" size={20} color="#666" />
+                  <MaterialIcons name="payments" size={20} color="#666" />
                   <Paragraph style={styles.paragraphText}>
                     Giá: {item.price}
                   </Paragraph>
@@ -177,6 +176,12 @@ const styles = StyleSheet.create({
   cardImage: {
     width: 60,
     height: 60,
+  },
+  card: {
+    marginBottom: 15,
+    marginHorizontal: 10,
+    borderRadius: 10,
+    backgroundColor: '#fff',
   },
   metricsContainer: {
     flexDirection: 'row',
