@@ -170,20 +170,18 @@ const AddressSelection = ({ navigation, route }) => {
   keyExtractor={(item) => item._id.toString()} // Use MongoDB ObjectId as key
   renderItem={({ item }) => (
     <TouchableOpacity
-      style={styles.addressContainer}
-      onPress={() => {
-        if (serviceType === 'Dọn dẹp nhà') {
-          navigation.navigate('ServicePackage', { selectedAddress: item, serviceType });
-        } else if (serviceType === 'Vệ sinh máy lạnh') {
-          navigation.navigate('ACService', { selectedAddress: item, serviceType });
-        } else if (serviceType === 'Vệ sinh máy giặt') {
-          navigation.navigate('ServicePackage', { selectedAddress: item, serviceType });
-        }
-      }}
-      
-      
-      
-    >
+    style={styles.addressContainer}
+    onPress={() => {
+      if (serviceType === '64fdb1f1c912ef0012e23b49') { // ID for "Dọn dẹp nhà"
+        navigation.navigate('ServicePackage', { selectedAddress: item, serviceType });
+      } else if (serviceType === '67316a9cac4d58ac2c65339f') { // ID for "Vệ sinh máy lạnh"
+        navigation.navigate('ACService', { selectedAddress: item, serviceType });
+      } else if (serviceType === '6730520722f42b6ef515c7b9') { // ID for "Vệ sinh máy giặt"
+        navigation.navigate('ServicePackage', { selectedAddress: item, serviceType });
+      }
+    }}
+  >
+  
       <View style={styles.addressDetails}>
         <Text style={styles.addressTitle}>{item.address}</Text>
         <Text style={styles.addressSubtitle}>{item.name || 'Unnamed Client'}</Text>

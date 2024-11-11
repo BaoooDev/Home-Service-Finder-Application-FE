@@ -19,19 +19,16 @@ const Confirmation = ({ route, navigation }) => {
   } = route?.params || {};
   
   const { selectedOption,quantity,selectedTime, selectedService, selectedAddress, selectedDay, serviceType } = route.params;
-  const defaultTime = new Date(); // Current date and time
-  defaultTime.setHours(14); // Set the hour to 14 (2 PM)
-  defaultTime.setMinutes(0); // Set minutes to 0
-  const hours = (serviceType === 'Dọn dẹp nhà')
+  const hours = (serviceType === '64fdb1f1c912ef0012e23b49')
   ? (selectedService && selectedService.match(/\d+/) ? parseInt(selectedService.match(/\d+/)[0], 10) : 0)
-  : quantity;  // For "Vệ sinh máy lạnh", use quantity
+  : quantity;
 
   const handleJobSubmit = async () => {
     // Prepare the data for the API
     const jobData = {
       address: selectedAddress.address,
       duration_hours: hours,  // Change to correct selected time
-      service_type: serviceType,
+      service_id: serviceType,
       scheduled_time: new Date(selectedDay.setHours(selectedTime.getHours(), selectedTime.getMinutes()))
     .toISOString(),   // Fix scheduled_time based on current logic
     };

@@ -10,7 +10,11 @@ const ActivityScreen = ({ navigation }) => {
   const [activeTab, setActiveTab] = useState('Chờ làm');
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const serviceNames = {
+    '64fdb1f1c912ef0012e23b49': 'Dọn dẹp nhà',
+    '6730520722f42b6ef515c7b9': 'Vệ sinh máy giặt',
+    '67316a9cac4d58ac2c65339f': 'Vệ sinh máy lạnh',
+  };
   useEffect(() => {
     const fetchJobs = async () => {
       try {
@@ -135,9 +139,9 @@ const ActivityScreen = ({ navigation }) => {
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <Card style={styles.card}>
-            <Card.Title title={item.service_type} right={() => <Chip>Mới đăng</Chip>} />
+            <Card.Title  title={serviceNames[item.service] || 'Unknown Service'}titleStyle={{ fontSize: 20 }} right={() => <Chip>Mới đăng</Chip>} />
             <Card.Content>
-              <Title>{item.service_type}</Title>
+              <Title>Đã đăng {new Date(item.created_at).toLocaleDateString()} </Title>
               
               <View style={styles.row}>
                 <MaterialIcons name="date-range" size={20} color="#666" />
@@ -146,7 +150,7 @@ const ActivityScreen = ({ navigation }) => {
 
               <View style={styles.row}>
                 <MaterialIcons name="access-time" size={20} color="#666" />
-                <Paragraph style={styles.paragraphText}>Thời gian: {new Date(item.scheduled_time).toLocaleTimeString()}</Paragraph>
+                <Paragraph style={styles.paragraphText}>Thời gian: {new Date(item.scheduled_time).toLocaleTimeString()} Trong {item.duration_hours} giờ</Paragraph>
               </View>
 
               <View style={styles.row}>
@@ -165,11 +169,7 @@ const ActivityScreen = ({ navigation }) => {
               <Button mode="contained" onPress={() => renderJobDetails(item)} style={styles.detailButton}>
                 Xem chi tiết
               </Button>
-              {item.status === 'completed' ? (
-                <Button mode="contained" onPress={() => navigation.navigate('RatingScreen', { jobId: item._id })} style={styles.ratingButton}>
-                  Đánh giá
-                </Button>
-              ) : item.status === 'in_progress' || item.status === 'canceled' ? null : (
+              { item.status === 'in_progress' || item.status === 'canceled' ||item.status === 'completed' ? null : (
                 <Button mode="contained" onPress={() => handleJobCancel(item._id, item.scheduled_time)} style={styles.cancelButton}>
                   Hủy công việc
                 </Button>

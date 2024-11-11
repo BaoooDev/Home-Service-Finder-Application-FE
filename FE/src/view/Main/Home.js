@@ -6,7 +6,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 const { width } = Dimensions.get('window');  // Lấy chiều rộng màn hình cho banner
 
 const HomeScreen = ({ navigation }) => {
-  const [serviceType, setServiceType] = useState('Dọn dẹp nhà');
 
   const [currentIndex, setCurrentIndex] = useState(0);  // Chỉ số banner hiện tại
   const scrollViewRef = useRef(null);  // Tạo tham chiếu cho ScrollView
@@ -68,7 +67,7 @@ const HomeScreen = ({ navigation }) => {
           <TouchableOpacity
             style={styles.serviceItem}
             onPress={() => {
-              const service = 'Dọn dẹp nhà';  // Set the service type directly
+              const service = '64fdb1f1c912ef0012e23b49';  // Set the service type directly
               navigation.navigate('ServiceNavigation', { serviceType: service });  // Navigate to ServiceNavigation
             }}
           >
@@ -81,7 +80,7 @@ const HomeScreen = ({ navigation }) => {
           <TouchableOpacity
             style={styles.serviceItem}
             onPress={() =>{
-              const service = 'Vệ sinh máy giặt';  // Set the service type directly
+              const service = '6730520722f42b6ef515c7b9';  // Set the service type directly
               navigation.navigate('ServiceNavigation', { serviceType: service });
             }}
           >
@@ -92,7 +91,7 @@ const HomeScreen = ({ navigation }) => {
           <TouchableOpacity
             style={styles.serviceItem}
             onPress={() =>{
-              const service = 'Vệ sinh máy lạnh';  // Set the service type directly
+              const service = '67316a9cac4d58ac2c65339f';  // Set the service type directly
               navigation.navigate('ACServiceNavigation', { serviceType: service });
             }}
           >

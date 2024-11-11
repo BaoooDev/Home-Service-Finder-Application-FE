@@ -40,7 +40,6 @@ import Confirmation from '../view/Service/Confirmation'
 import Success from '../view/Service/Success'
 import Rating from '../view/Service/Rating'
 import ACService from '../view/Service/ACservice'
-import ServiceRating from '../view/Service/ServiceRating'
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -241,18 +240,6 @@ const ACServiceNavigation = ({ route }) => {
   )
 }
 
-const RatingScreen = () => {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Rating" component={Rating} options={{ headerShown: false }} />
-      <Stack.Screen
-        name="ServiceRating"
-        component={ServiceRating}
-        options={{ headerShown: false }}
-      />
-    </Stack.Navigator>
-  )
-}
 // Navigation Stack chính
 const NavigationStack = () => {
   return (
@@ -304,11 +291,7 @@ const NavigationStack = () => {
         />
         <Stack.Screen name="Success" component={Success} options={{ headerShown: false }} />
         <Stack.Screen name="JobDetails" component={JobDetail} options={{ headerShown: false }} />
-        <Stack.Screen
-          name="RatingScreen"
-          component={RatingScreen}
-          options={{ headerShown: false }}
-        />
+        <Stack.Screen name="Rating" component={Rating} options={{ headerShown: false }} />
         <Stack.Screen
           name="EmployeeJobDetail"
           component={EmployeeJobDetail}

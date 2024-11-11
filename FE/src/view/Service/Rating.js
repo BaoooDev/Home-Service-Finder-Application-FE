@@ -1,27 +1,63 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Image, TouchableWithoutFeedback, Keyboard, Modal } from 'react-native';
 import { Button, Title } from 'react-native-paper';
-import { AirbnbRating } from 'react-native-ratings'; // Library for star ratings
-import { useNavigation } from '@react-navigation/native';
+import { AirbnbRating } from 'react-native-ratings';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { API_URL } from '@env';
+import * as SecureStore from 'expo-secure-store';
 
-const Rating = ({ route }) => {
-  const navigation = useNavigation();
+const Rating = ({ navigation, route }) => {
+  const { jobId, jobDetails, onRatingSubmitted } = route.params || {};
+  const workerName = jobDetails?.worker?.full_name || 'Worker Name';
+  const workerAvatar = jobDetails?.worker?.avatar || 'https://via.placeholder.com/50';
 
+  // State variables
   const [workerRating, setWorkerRating] = useState(0);
   const [serviceRating, setServiceRating] = useState(0);
   const [workerComment, setWorkerComment] = useState('');
   const [serviceComment, setServiceComment] = useState('');
+  const [showModal, setShowModal] = useState(false);
 
-  const handleSubmit = () => {
-    console.log('Submit Ratings', {
-      workerRating,
-      serviceRating,
-      workerComment,
-      serviceComment,
-    });
+  const getToken = async () => {
+    return await SecureStore.getItemAsync('authToken');
+  };
 
-    navigation.goBack();  // Navigate back after submission
+  const handleSubmit = async () => {
+    const token = await getToken();
+
+    if (!token) {
+      console.error('Token not found. Please login again.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/jobs/${jobId}/rate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          workerRating,
+          serviceRating,
+          workerComment,
+          serviceComment,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        console.log('Rating submitted successfully:', data.message);
+        setShowModal(true); // Show success modal
+        onRatingSubmitted(); // Notify JobDetail screen that the rating was submitted
+      } else {
+        console.error('Failed to submit rating:', data.message);
+      }
+    } catch (error) {
+      console.error('Error submitting rating:', error);
+    }
   };
 
   return (
@@ -31,8 +67,8 @@ const Rating = ({ route }) => {
           {/* Worker Rating Section */}
           <View style={styles.section}>
             <View style={styles.header}>
-              <Image source={{ uri: 'https://via.placeholder.com/50' }} style={styles.avatar} />
-              <Text style={styles.workerName}>Worker Name</Text>
+              <Image source={{ uri: workerAvatar }} style={styles.avatar} />
+              <Text style={styles.workerName}>{workerName}</Text>
             </View>
 
             <Title>Đánh giá người giúp việc</Title>
@@ -80,6 +116,23 @@ const Rating = ({ route }) => {
           <Button mode="contained" style={styles.submitButton} onPress={handleSubmit}>
             Gửi đánh giá
           </Button>
+
+          {/* Centered Modal for feedback */}
+          <Modal
+            transparent={true}
+            visible={showModal}
+            animationType="slide"
+            onRequestClose={() => setShowModal(false)}
+          >
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalText}>Đã gửi đánh giá! Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</Text>
+                <Button onPress={() => { setShowModal(false); navigation.goBack(); }}>
+                  OK
+                </Button>
+              </View>
+            </View>
+          </Modal>
         </View>
       </TouchableWithoutFeedback>
     </SafeAreaView>
@@ -132,6 +185,24 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#ddd',
     marginVertical: 20,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: 300,
+    padding: 20,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 20,
   },
 });
 

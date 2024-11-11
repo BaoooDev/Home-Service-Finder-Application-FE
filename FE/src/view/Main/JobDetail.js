@@ -1,41 +1,100 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
-import { Button, Card, Title, Paragraph, Avatar } from 'react-native-paper';
+import { Button, Card, Paragraph, Avatar } from 'react-native-paper';
 import { MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
+import { API_URL } from '@env';
+import * as SecureStore from 'expo-secure-store';
 
-// Temporary mock worker data
-const mockWorker = {
-  _id: 'worker123',
-  name: 'Nguyen Van A',
-  phone: '0912345678',
-  avatar: 'https://via.placeholder.com/48',  // Placeholder for worker's avatar
-  rating: 4.5, // Example rating
-};
+const JobDetail = ({ navigation, route }) => {
+  const { job } = route.params;
+  const [jobDetails, setJobDetails] = useState(null);
+  const [ratingSubmitted, setRatingSubmitted] = useState(false); // State to track if rating is submitted
+  const { colors } = useTheme();
 
-const JobDetail = ({ navigation,route }) => {
-  const { job } = route.params; // assuming job data is passed via route params
-  const { colors } = useTheme(); // Get theme colors
+  const getToken = async () => {
+    const token = await SecureStore.getItemAsync('authToken');
+    return token;
+  };
 
-  // For demonstration, we'll assume that if the job is accepted, in_progress, or completed, we show the mock worker data
-  const showWorkerInfo = ['accepted', 'in_progress', 'completed'].includes(job.status);
+  // Fetch job details and check if rating is submitted
+  useEffect(() => {
+    const fetchJobDetails = async () => {
+      try {
+        const token = await getToken();
+        if (!token) {
+          throw new Error('Token not found. Please login again.');
+        }
+        
+        // Check if rating was previously submitted for this job
+        const isRatingSubmitted = await SecureStore.getItemAsync(`ratingSubmitted_${job._id}`);
+        if (isRatingSubmitted === 'true') {
+          setRatingSubmitted(true);
+        }
+
+        const response = await fetch(`${API_URL}/jobs/${job._id}/details`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) {
+          console.error(`Failed to fetch job details. Status: ${response.status}`);
+          return;
+        }
+        const data = await response.json();
+        if (data.success) {
+          setJobDetails(data.job);
+        } else {
+          console.error('Failed to fetch job details:', data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching job details:', error);
+      }
+    };
+    fetchJobDetails();
+  }, [job]);
+
+  if (!jobDetails) {
+    return <Text>Loading...</Text>;
+  }
+
+  const clientAddress = jobDetails.client?.client_profile?.addresses?.find(
+    (addr) => addr.address === jobDetails.address
+  );
+  const clientName = jobDetails.client.name || 'N/A';
+  const clientPhone = jobDetails.client.phone || 'N/A';
+  const formattedScheduledTime = new Date(jobDetails.scheduled_time).toLocaleString();
+  const showWorkerInfo = ['accepted', 'in_progress', 'completed'].includes(jobDetails.status);
+
+  // Handler for navigating to Rating screen
+  const handleRating = () => {
+    navigation.navigate('Rating', {
+      jobId: jobDetails._id,
+      jobDetails,
+      onRatingSubmitted: async () => {
+        setRatingSubmitted(true); // Update the local state
+        await SecureStore.setItemAsync(`ratingSubmitted_${jobDetails._id}`, 'true'); // Persist the rating submission
+      },
+    });
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView style={styles.scrollView}>
-
         {/* Address Section */}
         <Card style={styles.card}>
           <Card.Title title="Địa chỉ" left={(props) => <MaterialIcons name="location-on" size={28} color={colors.text} />} />
           <Card.Content>
-            <Paragraph style={styles.paragraph}>{job.address}</Paragraph>
+            <Paragraph style={styles.paragraph}>{jobDetails.address}</Paragraph>
             <View style={styles.row}>
               <MaterialIcons name="date-range" size={20} color={colors.text} />
-              <Paragraph style={styles.subText}>Chủ nhật, {job.scheduled_time} - {job.time}</Paragraph>
+              <Paragraph style={styles.subText}>Chủ nhật, {formattedScheduledTime}</Paragraph>
             </View>
             <View style={styles.row}>
               <MaterialIcons name="phone" size={20} color={colors.text} />
-              <Paragraph style={styles.subText}>{job.phone} | {job.name}</Paragraph>
+              <Paragraph style={styles.subText}>{clientPhone} | {clientName}</Paragraph>
             </View>
           </Card.Content>
         </Card>
@@ -46,11 +105,11 @@ const JobDetail = ({ navigation,route }) => {
           <Card.Content>
             <View style={styles.row}>
               <MaterialIcons name="access-time" size={20} color={colors.text} />
-              <Paragraph style={styles.subText}>Thời lượng: {job.duration} giờ, {job.time_start} đến {job.time_end}</Paragraph>
+              <Paragraph style={styles.subText}>Thời lượng: {jobDetails.duration_hours} giờ</Paragraph>
             </View>
             <View style={styles.row}>
               <MaterialIcons name="note" size={20} color={colors.text} />
-              <Paragraph style={styles.subText}>Ghi chú: {job.notes || 'Không có ghi chú'}</Paragraph>
+              <Paragraph style={styles.subText}>Ghi chú: {jobDetails.notes || 'Không có ghi chú'}</Paragraph>
             </View>
           </Card.Content>
         </Card>
@@ -61,47 +120,53 @@ const JobDetail = ({ navigation,route }) => {
           <Card.Content>
             <View style={styles.row}>
               <FontAwesome5 name="money-bill-wave" size={20} color={colors.text} />
-              <Paragraph style={styles.subText}>Tổng cộng: {job.price} VND</Paragraph>
+              <Paragraph style={styles.subText}>Tổng cộng: {jobDetails.price} VND</Paragraph>
             </View>
           </Card.Content>
         </Card>
 
         {/* Worker Info (if job is accepted, in_progress, or completed) */}
-        {showWorkerInfo && (
+        {showWorkerInfo && jobDetails.worker && (
           <Card style={styles.card}>
             <Card.Title
               title="Thông tin người giúp việc"
-              left={(props) => <Avatar.Image size={48} source={{ uri: mockWorker.avatar }} />}
+              left={(props) => <Avatar.Image size={48} source={{ uri: jobDetails.worker.avatar || 'https://via.placeholder.com/48' }} />}
             />
             <Card.Content>
               <View style={styles.row}>
                 <MaterialIcons name="person" size={20} color={colors.text} />
-                <Paragraph style={styles.subText}>Tên: {mockWorker.name}</Paragraph>
+                <Paragraph style={styles.subText}>Tên: {jobDetails.worker.name}</Paragraph>
               </View>
               <View style={styles.row}>
                 <MaterialIcons name="phone" size={20} color={colors.text} />
-                <Paragraph style={styles.subText}>Số điện thoại: {mockWorker.phone}</Paragraph>
+                <Paragraph style={styles.subText}>Số điện thoại: {jobDetails.worker.phone}</Paragraph>
               </View>
               <View style={styles.row}>
                 <MaterialIcons name="star" size={20} color={colors.text} />
-                <Paragraph style={styles.subText}>Đánh giá: {mockWorker.rating} ⭐</Paragraph>
+                <Paragraph style={styles.subText}>Đánh giá: {jobDetails.worker.rating.toFixed(1)} ⭐</Paragraph>
               </View>
             </Card.Content>
           </Card>
         )}
 
-        {/* Footer Section */}
-        {job.status === 'completed' ? (
-          <Button mode="contained" style={styles.rateButton} onPress={() => navigation.navigate('RatingScreen', { jobId: job._id })}>
-            Đánh giá
+        {/* Conditionally Render Button */}
+        {ratingSubmitted ? (
+          <Button
+            mode="contained"
+            style={styles.rateButton}
+            onPress={() => navigation.navigate('Home')}
+          >
+            Đặt Lại
           </Button>
         ) : (
-          job.status !== 'in_progress' && (
-            <View style={styles.footer}>
-              <Button mode="outlined" style={styles.cancelButton} onPress={() => console.log('Cancel Job Pressed')}>
-                Đổi thời gian / Hủy việc
-              </Button>
-            </View>
+          jobDetails.status === 'completed' && (
+            <Button
+              mode="contained"
+              style={styles.rateButton}
+              onPress={handleRating}
+            >
+              Đánh giá
+            </Button>
           )
         )}
       </ScrollView>
@@ -132,14 +197,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 14,
     color: '#666',
-  },
-  footer: {
-    padding: 16,
-  },
-  cancelButton: {
-    borderColor: '#FF5252',
-    borderWidth: 1,
-    color: '#FF5252',
   },
   rateButton: {
     backgroundColor: '#FF8A00',
