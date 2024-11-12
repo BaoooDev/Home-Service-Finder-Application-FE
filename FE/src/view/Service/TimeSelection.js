@@ -4,38 +4,74 @@ import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 const TimeSelection = ({ navigation, route }) => {
-  const { selectedOption,quantity,selectedService, selectedAddress, serviceType } = route.params;
-  const [selectedTime, setSelectedTime] = useState(new Date()); // Initialize with current time
+  const { selectedOption, quantity, selectedService, selectedAddress, serviceType, totalPrice } = route.params;
+  const [selectedTime, setSelectedTime] = useState(new Date());
   const [isWeekly, setIsWeekly] = useState(false);
   const [note, setNote] = useState('');
   const [daysOfWeek, setDaysOfWeek] = useState([]);
   const [selectedDay, setSelectedDay] = useState(null);
-  const [showPicker, setShowPicker] = useState(false); // To show time picker modal
+  const [showPicker, setShowPicker] = useState(false);
+  const [dynamicPrice, setDynamicPrice] = useState(totalPrice); // Start with initial price
 
   const toggleWeeklySwitch = () => setIsWeekly(!isWeekly);
 
   const onTimeChange = (event, selectedDate) => {
-    // Ensure that the selectedDate is valid before updating the state
     if (selectedDate) {
       setSelectedTime(selectedDate);
     }
-    setShowPicker(false);  // Hide the picker after selecting
+    setShowPicker(false);
   };
 
   // Automatically generate days from today up to the next 7 days
   useEffect(() => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset to start of the day
+    today.setHours(0, 0, 0, 0);
 
     const upcomingDays = [];
     for (let i = 0; i < 7; i++) {
       const day = new Date(today);
-      day.setDate(today.getDate() + i); // Increment by i days
+      day.setDate(today.getDate() + i);
       upcomingDays.push(day);
     }
     setDaysOfWeek(upcomingDays);
-    setSelectedDay(upcomingDays[0]); // Default to today
+    setSelectedDay(upcomingDays[0]);
   }, []);
+
+  // Recalculate price when selectedDay or other factors change
+  useEffect(() => {
+    if (selectedDay) {
+      calculateDynamicPrice(selectedDay);
+    }
+  }, [selectedDay, selectedService, isWeekly]);
+
+  const calculateDynamicPrice = (day) => {
+    const hours = parseInt(selectedService);
+    let calculatedPrice = totalPrice;
+    // Apply surcharges based on selected day and other conditions
+    const isWeekend = day.getDay() === 7 || day.getDay() === 0; // Saturday or Sunday
+    const daysUntilService = Math.ceil((day - new Date()) / (1000 * 60 * 60 * 24)); // Days difference
+
+    // Weekend Surcharge (20%)
+    if (isWeekend) {
+      calculatedPrice *= 1.2;
+    }
+
+    // Last-Minute Surcharge
+    if (daysUntilService <= 0) {
+      calculatedPrice *= 1.5; // 50% surcharge if within 1 day
+    } else if (daysUntilService <= 1) {
+      calculatedPrice *= 1.2; // 20% surcharge if within 3 days
+    }
+
+    // Example Holiday Surcharge (30%)
+    const holidays = ['2024-01-01', '2024-05-01', '2024-12-25']; // Define holidays
+    const dayString = day.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+    if (holidays.includes(dayString)) {
+      calculatedPrice *= 1.3;
+    }
+
+    setDynamicPrice(calculatedPrice);
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -78,34 +114,16 @@ const TimeSelection = ({ navigation, route }) => {
 
       {/* Modal for DateTimePicker */}
       {showPicker && (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={showPicker}
-          onRequestClose={() => setShowPicker(false)}
-        >
+        <Modal animationType="slide" transparent={true} visible={showPicker} onRequestClose={() => setShowPicker(false)}>
           <View style={styles.modalContainer}>
             <View style={[styles.modalContent, { backgroundColor: '#333' }]}>
-              <DateTimePicker
-                value={selectedTime}
-                mode="time"
-                is24Hour={true}
-                display="spinner" 
-                themeVariant="dark"
-                onChange={onTimeChange}
-              />
+              <DateTimePicker value={selectedTime} mode="time" is24Hour={true} display="spinner" themeVariant="dark" onChange={onTimeChange} />
 
               <View style={styles.modalButtons}>
-                <TouchableOpacity
-                  style={styles.confirmButton}
-                  onPress={() => setShowPicker(false)}
-                >
+                <TouchableOpacity style={styles.confirmButton} onPress={() => setShowPicker(false)}>
                   <Text style={styles.confirmText}>Xác nhận</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.cancelButton}
-                  onPress={() => setShowPicker(false)}
-                >
+                <TouchableOpacity style={styles.cancelButton} onPress={() => setShowPicker(false)}>
                   <Text style={styles.cancelText}>Hủy</Text>
                 </TouchableOpacity>
               </View>
@@ -117,33 +135,18 @@ const TimeSelection = ({ navigation, route }) => {
       {/* Lặp lại hàng tuần */}
       <View style={styles.weeklyRepeat}>
         <Text style={styles.weeklyText}>Lặp lại hàng tuần</Text>
-        <Switch
-          trackColor={{ false: '#767577', true: '#ff8a00' }}
-          thumbColor={isWeekly ? '#fff' : '#fff'}
-          onValueChange={toggleWeeklySwitch}
-          value={isWeekly}
-        />
+        <Switch trackColor={{ false: '#767577', true: '#ff8a00' }} thumbColor={isWeekly ? '#fff' : '#fff'} onValueChange={toggleWeeklySwitch} value={isWeekly} />
       </View>
 
       {/* Ghi chú cho Tasker */}
       <Text style={styles.sectionTitle}>Ghi chú cho Tasker</Text>
       <Text style={styles.description}>Ghi chú này sẽ giúp Tasker làm nhanh và tốt hơn.</Text>
-      <TextInput
-        style={styles.noteInput}
-        placeholder="Bạn có yêu cầu gì thêm, hãy nhập ở đây nhé"
-        multiline={true}
-        value={note}
-        onChangeText={(text) => setNote(text)}
-      />
+      <TextInput style={styles.noteInput} placeholder="Bạn có yêu cầu gì thêm, hãy nhập ở đây nhé" multiline={true} value={note} onChangeText={(text) => setNote(text)} />
 
       {/* Tổng tiền và nút Tiếp theo */}
       <View style={styles.footer}>
-        <Text style={styles.totalText}>240,000 VND/3h</Text>
-        <TouchableOpacity
-          style={styles.nextButton}
-          onPress={() => navigation.navigate('Confirmation', { selectedOption,
-            quantity,selectedTime, selectedDay, selectedService, selectedAddress, serviceType })}
-        >
+        <Text style={styles.totalText}>{dynamicPrice.toLocaleString()} VND</Text>
+        <TouchableOpacity style={styles.nextButton} onPress={() => navigation.navigate('Confirmation', { selectedOption, quantity, selectedTime, selectedDay, selectedService, selectedAddress, serviceType, dynamicPrice })}>
           <Text style={styles.nextButtonText}>Tiếp theo</Text>
         </TouchableOpacity>
       </View>

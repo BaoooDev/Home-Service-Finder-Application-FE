@@ -1,14 +1,67 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Switch, SafeAreaView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Switch, SafeAreaView, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';  
+import { API_URL } from '@env'; // Make sure your API URL is set up correctly
 
 const ServicePackage = ({ navigation, route }) => {
-  const { selectedAddress } = route.params;
-  const { serviceType } = route.params;
+  const { selectedAddress, serviceType } = route.params;
   const [selectedService, setSelectedService] = useState('3 giờ');
   const [isPremium, setIsPremium] = useState(false);
+  const [serviceDetails, setServiceDetails] = useState(null);
+  const [totalPrice, setTotalPrice] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const togglePremiumSwitch = () => setIsPremium(previousState => !previousState);
+
+  // Fetch service details from the server
+  useEffect(() => {
+    const fetchServiceDetails = async () => {
+      try {
+        const response = await fetch(`${API_URL}/services/${serviceType}`);
+        const data = await response.json();
+        if (data.success) {
+          setServiceDetails(data.service);
+          calculateTotalPrice(data.service, selectedService); // Initial price calculation
+        }
+      } catch (error) {
+        console.error('Failed to fetch service details:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServiceDetails();
+  }, [serviceType]);
+
+  // Function to calculate the total price based on duration
+  const calculateTotalPrice = (service, duration) => {
+    if (!service) return;
+
+    const hours = parseInt(duration);
+    const basePrice = service.base_price;
+    const pricePerHour = service.price_per_hour;
+    const calculatedPrice = basePrice + (pricePerHour * hours);
+
+    // Apply premium charge if selected
+    const finalPrice = isPremium ? calculatedPrice * 1.3 : calculatedPrice; // Example: 30% premium
+
+    setTotalPrice(finalPrice);
+  };
+
+  // Recalculate price when duration or premium status changes
+  useEffect(() => {
+    if (serviceDetails) {
+      calculateTotalPrice(serviceDetails, selectedService);
+    }
+  }, [selectedService, isPremium]);
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <ActivityIndicator size="large" color="#ff8a00" />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -68,10 +121,10 @@ const ServicePackage = ({ navigation, route }) => {
 
       {/* Tổng cộng và nút tiếp theo */}
       <View style={styles.footer}>
-        <Text style={styles.totalText}>240,000 VND/3h</Text>
+        <Text style={styles.totalText}>{totalPrice ? `${totalPrice.toLocaleString()} VND` : "Calculating..."}</Text>
         <TouchableOpacity
           style={styles.nextButton}
-          onPress={() => navigation.navigate('TimeSelection', { selectedService, selectedAddress,serviceType })}
+          onPress={() => navigation.navigate('TimeSelection', { selectedService, selectedAddress, serviceType,totalPrice })}
         >
           <Text style={styles.nextButtonText}>Tiếp theo</Text>
         </TouchableOpacity>

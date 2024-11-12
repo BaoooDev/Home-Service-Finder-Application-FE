@@ -1,31 +1,30 @@
-import { Ionicons } from '@expo/vector-icons'
-import * as SecureStore from 'expo-secure-store' // Import SecureStore
-import React, { useState } from 'react'
-import { Alert, Image, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native'
-
-// Import API_URL from .env
-import { API_URL } from '@env'
+import { Ionicons } from '@expo/vector-icons';
+import * as SecureStore from 'expo-secure-store';
+import React, { useState } from 'react';
+import { Alert, Image, Switch, Text, TextInput, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { API_URL } from '@env';
 
 const EmployeeSignIn = ({ navigation }) => {
   // Switch
-  const [isEnabled, setIsEnabled] = useState(false)
-  const toggleSwitch = () => setIsEnabled((previousState) => !previousState)
+  const [isEnabled, setIsEnabled] = useState(false);
+  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
   // show/hide password
-  const [isPasswordVisible, setPasswordVisible] = useState(false)
+  const [isPasswordVisible, setPasswordVisible] = useState(false);
   const togglePasswordVisibility = () => {
-    setPasswordVisible(!isPasswordVisible)
-  }
+    setPasswordVisible(!isPasswordVisible);
+  };
 
   // Login form state
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   // Handle login function
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Thông báo', 'Vui lòng nhập đầy đủ thông tin')
-      return
+      Alert.alert('Thông báo', 'Vui lòng nhập đầy đủ thông tin');
+      return;
     }
 
     try {
@@ -38,206 +37,180 @@ const EmployeeSignIn = ({ navigation }) => {
           email,
           password,
         }),
-      })
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (response.ok) {
-        // Store token and userId as strings
-        await SecureStore.setItemAsync('authToken', result.token.toString())
-        // Navigate to the next screen
-        navigation.navigate('EmployeeTabNavigationContainer')
+        await SecureStore.setItemAsync('authToken', result.token.toString());
+        navigation.navigate('EmployeeTabNavigationContainer');
       } else {
-        Alert.alert('Đăng nhập thất bại', result.msg)
+        Alert.alert('Đăng nhập thất bại', result.msg);
       }
     } catch (error) {
-      console.error('Error during login:', error)
-      Alert.alert('Đăng nhập thất bại', 'Có lỗi xảy ra khi đăng nhập')
+      console.error('Error during login:', error);
+      Alert.alert('Đăng nhập thất bại', 'Có lỗi xảy ra khi đăng nhập');
     }
-  }
+  };
 
   return (
-    <View>
-      {/* logo */}
-      <View style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <SafeAreaView style={styles.container}>
+      {/* Logo */}
+      <View style={styles.logoContainer}>
         <TouchableOpacity onPress={() => navigation.navigate('Start')}>
-          <Image
-            source={require('../../img/imgAuth/logo.png')}
-            style={{
-              marginTop: 18,
-              width: 100,
-              height: 100,
-              resizeMode: 'contain',
-            }}
-          />
+          <Image source={require('../../img/imgAuth/worker.png')} style={styles.logo} />
         </TouchableOpacity>
-        <Text style={{ fontWeight: 'bold', fontSize: 28, marginTop: 5 }}>TBKEE</Text>
+        <Text style={styles.title}>TBKEE PARTNER</Text>
       </View>
 
       {/* Sign in form */}
-      <View style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <View style={{ width: '90%', paddingTop: 10 }}>
-
-          {/* Email input */}
-          <View
-            style={{
-              width: '100%',
-              height: 50,
-              borderWidth: 1,
-              borderRadius: 12,
-              marginTop: 20,
-              flexDirection: 'row',
-              borderColor: 'gray',
-            }}
-          >
-            <View
-              style={{
-                flex: 1.5,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Ionicons name="mail-outline" size={25} color="black" />
-            </View>
-            <View style={{ flex: 8.5, justifyContent: 'center' }}>
-              <TextInput
-                placeholder="Nhập email"
-                style={{
-                  color: 'gray',
-                  fontSize: 18,
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: 12,
-                }}
-                value={email}
-                onChangeText={setEmail}
-              />
-            </View>
-          </View>
-
-          {/* Password input */}
-          <View
-            style={{
-              width: '100%',
-              height: 50,
-              borderWidth: 1,
-              borderRadius: 12,
-              marginTop: 18,
-              flexDirection: 'row',
-              borderColor: 'gray',
-            }}
-          >
-            <View
-              style={{
-                flex: 1.5,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Ionicons name="lock-closed-outline" size={25} color="black" />
-            </View>
-            <View style={{ flex: 7, justifyContent: 'center' }}>
-              <TextInput
-                placeholder="Nhập mật khẩu"
-                style={{
-                  color: 'gray',
-                  fontSize: 18,
-                  width: '100%',
-                  height: '100%',
-                  borderRadius: 12,
-                }}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!isPasswordVisible}
-              />
-            </View>
-            <TouchableOpacity
-              style={{
-                flex: 1.5,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-              onPress={togglePasswordVisibility}
-            >
-              <Ionicons
-                name={isPasswordVisible ? 'eye-outline' : 'eye-off-outline'}
-                size={25}
-                color="black"
-              />
-            </TouchableOpacity>
-          </View>
-
-          {/* Remember me switch */}
-          <View
-            style={{
-              width: '100%',
-              height: 45,
-              marginTop: 15,
-              flexDirection: 'row',
-            }}
-          >
-            <View
-              style={{
-                flex: 6,
-                flexDirection: 'row',
-              }}
-            >
-              <View style={{ flex: 3 }}>
-                <Switch
-                  trackColor={{ false: '#767577', true: '#81b0ff' }}
-                  onValueChange={toggleSwitch}
-                  value={isEnabled}
-                  style={{ width: 35, height: 25 }}
-                />
-              </View>
-              <View style={{ flex: 7, marginTop: 5 }}>
-                <Text style={{ fontSize: 16, marginLeft: -5 }}>Nhớ tài khoản</Text>
-              </View>
-            </View>
-            <View style={{ flex: 4 }}>
-              <TouchableOpacity onPress={() => navigation.navigate('EmployeeRequestResetPassword')}>
-                <Text style={{ fontSize: 16, marginTop: 5 }}>Quên mật khẩu?</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+      <View style={styles.formContainer}>
+        {/* Email input */}
+        <View style={styles.inputContainer}>
+          <Ionicons name="mail-outline" size={25} color="black" style={styles.icon} />
+          <TextInput
+            placeholder="Nhập email"
+            style={styles.input}
+            value={email}
+            onChangeText={setEmail}
+          />
         </View>
-      </View>
 
-      {/* Login button */}
-      <View style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <View style={{ width: '90%', height: '100%', alignItems: 'center' }}>
-          <TouchableOpacity
-            style={{
-              width: '100%',
-              height: 50,
-              backgroundColor: '#ff8a00',
-              borderRadius: 10,
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginTop: 12,
-            }}
-            onPress={handleLogin} // Call the login function here
-          >
-            <Text style={{ color: 'white', fontSize: 18 }}>Đăng nhập</Text>
+        {/* Password input */}
+        <View style={styles.inputContainer}>
+          <Ionicons name="lock-closed-outline" size={25} color="black" style={styles.icon} />
+          <TextInput
+            placeholder="Nhập mật khẩu"
+            style={styles.input}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!isPasswordVisible}
+          />
+          <TouchableOpacity onPress={togglePasswordVisibility}>
+            <Ionicons name={isPasswordVisible ? 'eye-outline' : 'eye-off-outline'} size={25} color="black" />
           </TouchableOpacity>
+        </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              marginTop: 12,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Text style={{ fontSize: 16 }}>Bạn chưa có tài khoản?</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('EmployeeSignUp')}>
-              <Text style={{ color: '#5669fe', fontSize: 16, marginLeft: 5 }}>Đăng ký</Text>
-            </TouchableOpacity>
+        {/* Remember me switch and forgot password */}
+        <View style={styles.optionsContainer}>
+          <View style={styles.rememberMeContainer}>
+            <Switch
+              trackColor={{ false: '#767577', true: '#81b0ff' }}
+              onValueChange={toggleSwitch}
+              value={isEnabled}
+              style={styles.switch}
+            />
+            <Text style={styles.rememberMeText}>Nhớ tài khoản</Text>
           </View>
+          <TouchableOpacity onPress={() => navigation.navigate('EmployeeRequestResetPassword')}>
+            <Text style={styles.forgotPasswordText}>Quên mật khẩu?</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Login button */}
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <Text style={styles.loginButtonText}>Đăng nhập</Text>
+        </TouchableOpacity>
+
+        {/* Sign up link */}
+        <View style={styles.signUpContainer}>
+          <Text style={styles.signUpText}>Bạn chưa có tài khoản?</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('EmployeeSignUp')}>
+            <Text style={styles.signUpLink}>Đăng ký</Text>
+          </TouchableOpacity>
         </View>
       </View>
-    </View>
-  )
-}
+    </SafeAreaView>
+  );
+};
 
-export default EmployeeSignIn
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  logo: {
+    width: 100,
+    height: 100,
+    resizeMode: 'contain',
+  },
+  title: {
+    fontWeight: 'bold',
+    fontSize: 28,
+    marginTop: 10,
+  },
+  formContainer: {
+    marginTop: 20,
+    paddingHorizontal: 10,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 12,
+    paddingHorizontal: 10,
+    marginVertical: 10,
+    height: 50,
+  },
+  icon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    fontSize: 18,
+    color: 'gray',
+  },
+  optionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 15,
+  },
+  rememberMeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  switch: {
+    marginRight: 5,
+  },
+  rememberMeText: {
+    fontSize: 16,
+  },
+  forgotPasswordText: {
+    fontSize: 16,
+    color: '#5669fe',
+  },
+  loginButton: {
+    backgroundColor: '#4090C3', // Changed to green
+    borderRadius: 10,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  loginButtonText: {
+    color: 'white',
+    fontSize: 18,
+  },
+  signUpContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 12,
+  },
+  signUpText: {
+    fontSize: 16,
+  },
+  signUpLink: {
+    color: '#5669fe',
+    fontSize: 16,
+    marginLeft: 5,
+  },
+});
+
+export default EmployeeSignIn;

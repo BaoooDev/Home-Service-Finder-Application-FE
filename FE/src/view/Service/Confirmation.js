@@ -17,7 +17,7 @@ const Confirmation = ({ route, navigation }) => {
     totalPrice = "0 VND" 
   } = route?.params || {};
   
-  const { selectedOption,quantity,selectedTime, selectedService, selectedAddress, selectedDay, serviceType } = route.params;
+  const { quantity,selectedTime, selectedService, selectedAddress, selectedDay, serviceType,dynamicPrice } = route.params;
   const hours = (serviceType === '64fdb1f1c912ef0012e23b49')
   ? (selectedService && selectedService.match(/\d+/) ? parseInt(selectedService.match(/\d+/)[0], 10) : 0)
   : quantity;
@@ -28,6 +28,7 @@ const Confirmation = ({ route, navigation }) => {
       address: selectedAddress.address,
       duration_hours: hours,  // Change to correct selected time
       service_id: serviceType,
+      price:dynamicPrice,
       scheduled_time: new Date(selectedDay.setHours(selectedTime.getHours(), selectedTime.getMinutes()))
     .toISOString(),   // Fix scheduled_time based on current logic
     };
@@ -109,7 +110,7 @@ const Confirmation = ({ route, navigation }) => {
       {/* Total */}
       <View style={styles.footer}>
         <Text style={styles.totalText}>Tổng cộng</Text>
-        <Text style={styles.totalValue}>{totalPrice}</Text>
+        <Text style={styles.totalValue}>{dynamicPrice} VNĐ / {hours} giờ</Text>
       </View>
 
       {/* Submit Button */}
