@@ -49,7 +49,6 @@ const Rating = ({ navigation, route }) => {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        console.log('Rating submitted successfully:', data.message);
         setShowModal(true); // Show success modal
         onRatingSubmitted(); // Notify JobDetail screen that the rating was submitted
       } else {

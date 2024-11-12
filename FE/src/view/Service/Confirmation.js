@@ -4,7 +4,6 @@ import { Ionicons } from 'react-native-vector-icons';
 import { API_URL } from '@env';
 import * as SecureStore from "expo-secure-store";
 
-console.log(API_URL); 
 const Confirmation = ({ route, navigation }) => {
   // Receive job data from previous screens
   const { 
@@ -32,7 +31,6 @@ const Confirmation = ({ route, navigation }) => {
       scheduled_time: new Date(selectedDay.setHours(selectedTime.getHours(), selectedTime.getMinutes()))
     .toISOString(),   // Fix scheduled_time based on current logic
     };
-    console.log(jobData);
 
     try {
       const token = await SecureStore.getItemAsync("authToken");

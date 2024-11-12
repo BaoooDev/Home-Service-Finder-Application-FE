@@ -85,7 +85,6 @@ const AddressSelection = ({ navigation, route }) => {
   
         if (response.ok) {
           const result = await response.json();
-          console.log(result);
           showCustomAlert('Address updated successfully');
         } else {
           throw new Error('Failed to update address');
