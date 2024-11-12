@@ -81,7 +81,7 @@ const HomeScreen = ({ navigation }) => {
             style={styles.serviceItem}
             onPress={() =>{
               const service = '6730520722f42b6ef515c7b9';  // Set the service type directly
-              navigation.navigate('ServiceNavigation', { serviceType: service });
+              navigation.navigate('WMServiceNavigation', { serviceType: service });
             }}
           >
             <Image source={require('../../img/service/wsicon.png')} style={styles.icon} />

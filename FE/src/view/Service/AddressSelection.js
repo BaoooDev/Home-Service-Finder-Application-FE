@@ -176,7 +176,7 @@ const AddressSelection = ({ navigation, route }) => {
       } else if (serviceType === '67316a9cac4d58ac2c65339f') { // ID for "Vệ sinh máy lạnh"
         navigation.navigate('ACService', { selectedAddress: item, serviceType });
       } else if (serviceType === '6730520722f42b6ef515c7b9') { // ID for "Vệ sinh máy giặt"
-        navigation.navigate('ServicePackage', { selectedAddress: item, serviceType });
+        navigation.navigate('WashingMachineService', { selectedAddress: item, serviceType });
       }
     }}
   >

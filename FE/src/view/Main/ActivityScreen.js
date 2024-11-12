@@ -141,7 +141,7 @@ const ActivityScreen = ({ navigation }) => {
           <Card style={styles.card}>
             <Card.Title  title={serviceNames[item.service] || 'Unknown Service'}titleStyle={{ fontSize: 20 }} right={() => <Chip>Mới đăng</Chip>} />
             <Card.Content>
-              <Title>Đã đăng {new Date(item.created_at).toLocaleDateString()} </Title>
+              <Title>Đã đăng {new Date(item.createdAt).toLocaleDateString()} </Title>
               
               <View style={styles.row}>
                 <MaterialIcons name="date-range" size={20} color="#666" />

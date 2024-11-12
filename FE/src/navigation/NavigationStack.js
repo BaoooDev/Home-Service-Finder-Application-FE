@@ -40,7 +40,7 @@ import Confirmation from '../view/Service/Confirmation'
 import Success from '../view/Service/Success'
 import Rating from '../view/Service/Rating'
 import ACService from '../view/Service/ACservice'
-
+import WashingMachineService from '../view/Service/WashingMachineService'
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
 
@@ -239,6 +239,30 @@ const ACServiceNavigation = ({ route }) => {
     </Stack.Navigator>
   )
 }
+const WMServiceNavigation = ({ route }) => {
+  const { serviceType } = route.params
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="AddressSelection"
+        component={AddressSelection}
+        options={{ headerShown: false }}
+        initialParams={{ serviceType }} // Pass the service type as initial params
+      />
+      <Stack.Screen
+        name="WashingMachineService"
+        component={WashingMachineService} // This screen handles the AC cleaning process
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="TimeSelection"
+        component={TimeSelection}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen name="Confirmation" component={Confirmation} options={{ headerShown: false }} />
+    </Stack.Navigator>
+  )
+}
 
 // Navigation Stack chính
 const NavigationStack = () => {
@@ -287,6 +311,11 @@ const NavigationStack = () => {
         <Stack.Screen
           name="ACServiceNavigation"
           component={ACServiceNavigation}
+          options={{ headerShown: false }}
+        />
+           <Stack.Screen
+          name="WMServiceNavigation"
+          component={WMServiceNavigation}
           options={{ headerShown: false }}
         />
         <Stack.Screen name="Success" component={Success} options={{ headerShown: false }} />
