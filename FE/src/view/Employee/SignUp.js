@@ -61,7 +61,7 @@ const EmployeeSignUp = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.navigate('Start')}>
           <Image source={require('../../img/imgAuth/worker.png')} style={styles.logo} />
         </TouchableOpacity>
-        <Text style={styles.title}>TBKEE</Text>
+        <Text style={styles.title}>TBKEE PARTNER</Text>
       </View>
 
       <Formik
