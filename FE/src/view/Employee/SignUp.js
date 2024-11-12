@@ -1,35 +1,41 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { Formik } from 'formik';
-import * as Yup from 'yup';
-import { API_URL } from '@env';
-import * as SecureStore from 'expo-secure-store';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState } from 'react'
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import { Formik } from 'formik'
+import * as Yup from 'yup'
+import { API_URL } from '@env'
+import * as SecureStore from 'expo-secure-store'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const EmployeeSignUp = ({ navigation }) => {
-  const [isPasswordVisible, setPasswordVisible] = useState(false);
-  const [isConfirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [isPasswordVisible, setPasswordVisible] = useState(false)
+  const [isConfirmPasswordVisible, setConfirmPasswordVisible] = useState(false)
 
   const togglePasswordVisibility = () => {
-    setPasswordVisible(!isPasswordVisible);
-  };
+    setPasswordVisible(!isPasswordVisible)
+  }
 
   const toggleConfirmPasswordVisibility = () => {
-    setConfirmPasswordVisible(!isConfirmPasswordVisible);
-  };
+    setConfirmPasswordVisible(!isConfirmPasswordVisible)
+  }
 
   // Define validation schema using Yup
   const SignUpSchema = Yup.object().shape({
-    identity_number: Yup.string().required('CMND/CCCD là bắt buộc'),
+    identity_number: Yup.string()
+      .matches(/^\d{13}$/, 'CMND/CCCD phải có đúng 13 chữ số')
+      .required('CMND/CCCD là bắt buộc'),
     full_name: Yup.string().required('Họ tên là bắt buộc'),
     email: Yup.string().email('Email không hợp lệ').required('Email là bắt buộc'),
-    phone: Yup.string().required('Số điện thoại là bắt buộc'),
-    password: Yup.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự').required('Mật khẩu là bắt buộc'),
+    phone: Yup.string()
+      .matches(/^\d{10}$/, 'Số điện thoại phải có đúng 10 chữ số')
+      .required('Số điện thoại là bắt buộc'),
+    password: Yup.string()
+      .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
+      .required('Mật khẩu là bắt buộc'),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref('password'), null], 'Mật khẩu không khớp')
       .required('Xác nhận mật khẩu là bắt buộc'),
-  });
+  })
 
   const handleSignUp = async (values) => {
     try {
@@ -39,21 +45,21 @@ const EmployeeSignUp = ({ navigation }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(values),
-      });
+      })
 
-      const result = await response.json();
+      const result = await response.json()
 
       if (response.ok) {
-        await SecureStore.setItemAsync('authToken', result.token.toString());
-        navigation.navigate('EmployeeServiceType');
+        await SecureStore.setItemAsync('authToken', result.token.toString())
+        navigation.navigate('EmployeeServiceType')
       } else {
-        Alert.alert('Đăng ký thất bại', result.msg);
+        Alert.alert('Đăng ký thất bại', result.msg)
       }
     } catch (error) {
-      console.error('Error during sign-up:', error);
-      Alert.alert('Đăng ký thất bại', 'Có lỗi xảy ra khi đăng ký');
+      console.error('Error during sign-up:', error)
+      Alert.alert('Đăng ký thất bại', 'Có lỗi xảy ra khi đăng ký')
     }
-  };
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -148,10 +154,16 @@ const EmployeeSignUp = ({ navigation }) => {
                 secureTextEntry={!isPasswordVisible}
               />
               <TouchableOpacity onPress={togglePasswordVisibility}>
-                <Ionicons name={isPasswordVisible ? 'eye-outline' : 'eye-off-outline'} size={25} color="black" />
+                <Ionicons
+                  name={isPasswordVisible ? 'eye-outline' : 'eye-off-outline'}
+                  size={25}
+                  color="black"
+                />
               </TouchableOpacity>
             </View>
-            {errors.password && touched.password && <Text style={styles.errorText}>{errors.password}</Text>}
+            {errors.password && touched.password && (
+              <Text style={styles.errorText}>{errors.password}</Text>
+            )}
 
             {/* Confirm Password Input */}
             <View style={styles.inputContainer}>
@@ -165,7 +177,11 @@ const EmployeeSignUp = ({ navigation }) => {
                 secureTextEntry={!isConfirmPasswordVisible}
               />
               <TouchableOpacity onPress={toggleConfirmPasswordVisibility}>
-                <Ionicons name={isConfirmPasswordVisible ? 'eye-outline' : 'eye-off-outline'} size={25} color="black" />
+                <Ionicons
+                  name={isConfirmPasswordVisible ? 'eye-outline' : 'eye-off-outline'}
+                  size={25}
+                  color="black"
+                />
               </TouchableOpacity>
             </View>
             {errors.confirmPassword && touched.confirmPassword && (
@@ -188,10 +204,10 @@ const EmployeeSignUp = ({ navigation }) => {
         </TouchableOpacity>
       </View>
     </SafeAreaView>
-  );
-};
+  )
+}
 
-export default EmployeeSignUp;
+export default EmployeeSignUp
 
 const styles = StyleSheet.create({
   container: {
@@ -267,4 +283,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 5,
   },
-});
+})
