@@ -1,8 +1,9 @@
-import * as SecureStore from 'expo-secure-store'
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { ActivityIndicator } from 'react-native-paper'
 import { API_URL } from '@env'
+import { useFocusEffect } from '@react-navigation/native'
+import * as SecureStore from 'expo-secure-store'
+import React, { useState } from 'react'
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator } from 'react-native-paper'
 const EmployeeAccountScreen = ({ navigation }) => {
   const [me, setMe] = useState()
   const [loading, setLoading] = useState(false)
@@ -34,9 +35,11 @@ const EmployeeAccountScreen = ({ navigation }) => {
     }
   }
 
-  useEffect(() => {
-    getMe()
-  }, [])
+  useFocusEffect(
+    React.useCallback(() => {
+      getMe();
+    }, [])
+  );
 
   if (loading) {
     return (
