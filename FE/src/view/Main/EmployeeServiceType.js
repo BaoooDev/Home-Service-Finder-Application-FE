@@ -71,7 +71,7 @@ const EmployeeServiceType = ({ navigation }) => {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          address: `${selectedProvince}, ${selectedDistricts}`,
+          address: `${selectedProvince.name}, ${selectedDistricts.name}`,
           services,
         }),
       })
