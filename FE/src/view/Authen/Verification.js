@@ -34,7 +34,9 @@ const CountdownTimer = ({ initialSeconds }) => {
 
   const handleResend = () => {
     setSeconds(initialSeconds); // Reset thời gian đếm ngược
-    setIsCounting(true); // Bắt đầu lại bộ đếm
+    setIsCounting(true);
+    
+     // Bắt đầu lại bộ đếm
     // onResend && onResend(); // Gọi hàm onResend nếu có
   };
 
@@ -59,8 +61,9 @@ const formatTime = (seconds) => {
     .padStart(2, "0")}`;
 };
 
-const Verification = ({ navigation }) => {
+const Verification = ({ navigation, route  }) => {
   const [values, setValues] = useState(["", "", "", ""]);
+  const { email } = route.params;
 
   const handleChange = (text, index) => {
     const newValues = [...values];
@@ -68,6 +71,85 @@ const Verification = ({ navigation }) => {
     setValues(newValues);
   };
 
+  const verifyOTP = async () => {
+    try {
+      console.log("OTP truyền vào:", value); // Thêm dòng này để kiểm tra giá trị OTP
+  
+      const response = await fetch(`${API_URL}/api/users/verify`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: email, otp: value }),
+      });
+  
+      const data = await response.json();
+  
+      // Nếu có lỗi từ server, hiển thị lỗi đó
+      if (!response.ok) {
+        console.error(data);
+        throw new Error(data.message);
+      }
+  
+      console.log("Giá trị của data FP2:", data);
+  
+      // Hiển thị thông báo từ BE
+      Toast.show({
+        type: data.success ? "success" : "error",
+        text1: "Thông báo",
+        text2: data.message,
+      });
+  
+      // Chuyển đến trang Register nếu xác thực OTP thành công
+      if (data.success) {
+        console.log("Xác thực OTP thành công!");
+        navigation.navigate("Register", { email: email });
+      }
+  
+      return data;
+    } catch (error) {
+      console.error("Error:", error);
+      alert(`Xác thực OTP không thành công! Lỗi: ${error.message}`);
+    }
+  };
+  
+  
+  const handleSubmit = () => {
+    verifyOTP();
+  };
+  const resendOTP = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/users/send-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: email }),
+      });
+  
+      const data = await response.json();
+  
+      // Nếu có lỗi từ server, hiển thị lỗi đó
+      if (!response.ok) {
+        console.error(data);
+        throw new Error(data.message);
+      }
+  
+      console.log("Mã OTP mới:", data.otp);
+  
+      // Hiển thị thông báo từ BE
+      Toast.show({
+        type: data.success ? "success" : "error",
+        text1: "Thông báo",
+        text2: data.message,
+      });
+  
+      return data;
+    } catch (error) {
+      console.error("Error:", error);
+      alert(`Gửi lại OTP không thành công! Lỗi: ${error.message}`);
+    }
+  };
   return (
     <View style={styles.appContainer}>
       <View
@@ -97,7 +179,7 @@ const Verification = ({ navigation }) => {
           <View style={{ width: 300, height: 60 }}>
             <Text style={{ fontSize: 17, marginTop: 10 }}>
               Chúng tôi sẽ gửi mã xác thực đến {""}
-              <Text style={{ fontSize: 17 }}>vanchanh0730@gmail.com</Text>
+              <Text style={{ fontSize: 17 }}>{email}</Text>
             </Text>
           </View>
 
@@ -152,7 +234,7 @@ const Verification = ({ navigation }) => {
                 alignItems: "center",
                 marginTop: 12,
               }}
-              onPress={() => navigation.navigate("ResetPassword")}
+              onPress={handleSubmit}
             >
               <Text style={{ color: "white", fontSize: 20 }}>Tiếp tục</Text>
             </TouchableOpacity>

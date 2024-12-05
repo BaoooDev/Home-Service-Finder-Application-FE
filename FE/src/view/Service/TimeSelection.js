@@ -87,17 +87,20 @@ const TimeSelection = ({ navigation, route }) => {
       <Text style={styles.sectionTitle}>Thời gian làm việc</Text>
       <Text style={styles.description}>Chọn ngày làm</Text>
       <View style={styles.dateSelection}>
-        {daysOfWeek.map((day, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[styles.dayOption, selectedDay?.getTime() === day.getTime() && styles.selectedDay]}
-            onPress={() => setSelectedDay(day)}
-          >
-            <Text style={styles.dayText}>{`T${(day.getDay() === 0 ? 7 : day.getDay())}`}</Text>
-            <Text style={styles.dateText}>{day.getDate()}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+  {daysOfWeek.map((day, index) => (
+    <TouchableOpacity
+      key={index}
+      style={[styles.dayOption, selectedDay?.getTime() === day.getTime() && styles.selectedDay]}
+      onPress={() => setSelectedDay(day)}
+    >
+      <Text style={styles.dayText}>
+        {day.getDay() === 1 ? 'CN' : `T${day.getDay()}`} {/* Display 'CN' for Sunday */}
+      </Text>
+      <Text style={styles.dateText}>{day.getDate()}</Text>
+    </TouchableOpacity>
+  ))}
+</View>
+
 
       {/* Chọn giờ làm */}
       <View style={styles.timePicker}>

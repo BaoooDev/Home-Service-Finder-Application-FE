@@ -3,7 +3,13 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView } from 'rea
 import { SafeAreaView } from 'react-native-safe-area-context'; // Import SafeAreaView
 import { Ionicons } from '@expo/vector-icons';
 
-const AccountScreen = () => {
+const AccountScreen = ({ navigation }) => { // Khởi tạo navigation
+
+  const handleLogout = () => {
+    // Chuyển hướng đến màn hình SignIn
+    navigation.navigate('SignIn');// replace để ngăn quay lại màn hình hiện tại
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
@@ -26,7 +32,7 @@ const AccountScreen = () => {
         {/* Các mục trong trang tài khoản */}
         <View style={styles.menuContainer}>
           <MenuItem icon="wallet-outline" text="bPay" />
-          <MenuItem icon="gift-outline" text="Ưu đãi của tôi"  />
+          <MenuItem icon="gift-outline" text="Ưu đãi của tôi" />
           <MenuItem icon="ribbon-outline" text="bRewards" />
           <MenuItem icon="pricetag-outline" text="Gói Ưu Đãi" />
           <MenuItem icon="heart-outline" text="Tasker yêu thích" />
@@ -35,6 +41,11 @@ const AccountScreen = () => {
           <MenuItem icon="help-circle-outline" text="Trợ giúp" />
           <MenuItem icon="settings-outline" text="Cài đặt" />
         </View>
+
+        {/* Nút Đăng xuất */}
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutText}>Đăng xuất</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -123,6 +134,19 @@ const styles = StyleSheet.create({
   badgeText: {
     color: '#fff',
     fontSize: 12,
+  },
+  logoutButton: {
+    marginTop: 20,
+    marginHorizontal: 20,
+    paddingVertical: 15,
+    borderRadius: 8,
+    backgroundColor: '#FF3D00',
+    alignItems: 'center',
+  },
+  logoutText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

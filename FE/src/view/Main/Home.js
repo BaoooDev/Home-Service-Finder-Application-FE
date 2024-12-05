@@ -36,11 +36,8 @@ const HomeScreen = ({ navigation }) => {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.welcomeText}>Xin chào Bảo</Text>
-          <View style={styles.headerPoints}>
-            <Text style={styles.pointsText}>0 đ</Text>
-            <Text style={styles.bPointsText}>0 bPoints</Text>
-          </View>
+          <Text style={styles.welcomeText}>Xin chào bạn</Text>
+         
         </View>
 
         {/* Banner quảng cáo với tự động cuộn */}

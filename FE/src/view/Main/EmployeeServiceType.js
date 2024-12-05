@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator, FlatList, StyleSheet }
 import Checkbox from 'expo-checkbox'
 import { API_URL } from '@env'
 import * as SecureStore from 'expo-secure-store'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const EmployeeServiceType = ({ navigation }) => {
   const [loading, setLoading] = useState(false)
@@ -109,6 +110,7 @@ const EmployeeServiceType = ({ navigation }) => {
 
   // Render Provinces Screen
   const renderProvinces = () => (
+    <SafeAreaView style={styles.container}>
     <View style={styles.container}>
       <Text style={styles.title}>Bạn ở thành phố nào?</Text>
       {loading ? (
@@ -126,10 +128,12 @@ const EmployeeServiceType = ({ navigation }) => {
         />
       )}
     </View>
+    </SafeAreaView>
   )
 
   // Render Districts Screen
   const renderDistricts = () => (
+    <SafeAreaView style={styles.container}>
     <View style={styles.container}>
       <Text style={styles.title}>Bạn ở quận nào?</Text>
       <FlatList
@@ -150,10 +154,12 @@ const EmployeeServiceType = ({ navigation }) => {
         <Text style={styles.buttonText}>Quay lại</Text>
       </TouchableOpacity>
     </View>
+    </SafeAreaView>
   )
 
   // Render Services Screen
   const renderServices = () => (
+    <SafeAreaView style={styles.container}>
     <View style={styles.container}>
       <Text style={styles.title}>Bạn muốn đăng ký dịch vụ nào?</Text>
       <FlatList
@@ -178,6 +184,7 @@ const EmployeeServiceType = ({ navigation }) => {
         </TouchableOpacity>
       </View>
     </View>
+    </SafeAreaView>
   )
 
   // Main Render
@@ -195,6 +202,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 8,
     backgroundColor: '#f9f9f9',
+    paddingHorizontal: 16,
+
   },
   title: {
     fontSize: 18,

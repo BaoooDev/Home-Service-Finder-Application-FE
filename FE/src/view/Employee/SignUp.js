@@ -26,7 +26,7 @@ const EmployeeSignUp = ({ navigation }) => {
       .required('CMND/CCCD là bắt buộc'),
     full_name: Yup.string().required('Họ tên là bắt buộc'),
     email: Yup.string().email('Email không hợp lệ').required('Email là bắt buộc'),
-    phone: Yup.string()
+    phone_number: Yup.string()
       .matches(/^\d{10}$/, 'Số điện thoại phải có đúng 10 chữ số')
       .required('Số điện thoại là bắt buộc'),
     password: Yup.string()
@@ -75,7 +75,7 @@ const EmployeeSignUp = ({ navigation }) => {
           identity_number: '',
           full_name: '',
           email: '',
-          phone: '',
+          phone_number: '',
           password: '',
           confirmPassword: '',
         }}
@@ -134,13 +134,13 @@ const EmployeeSignUp = ({ navigation }) => {
               <TextInput
                 placeholder="Nhập số điện thoại của bạn"
                 style={styles.input}
-                onChangeText={handleChange('phone')}
-                onBlur={handleBlur('phone')}
-                value={values.phone}
+                onChangeText={handleChange('phone_number')}
+                onBlur={handleBlur('phone_number')}
+                value={values.phone_number}
                 keyboardType="phone-pad"
               />
             </View>
-            {errors.phone && touched.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
+            {errors.phone_number && touched.phone_number && <Text style={styles.errorText}>{errors.phone_number}</Text>}
 
             {/* Password Input */}
             <View style={styles.inputContainer}>

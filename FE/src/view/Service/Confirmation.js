@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView ,Image} from 'react-native';
 import { Ionicons } from 'react-native-vector-icons';
 import { API_URL } from '@env';
 import * as SecureStore from "expo-secure-store";
+import { useState, useEffect } from "react";
 
 const Confirmation = ({ route, navigation }) => {
   // Receive job data from previous screens
@@ -16,7 +17,8 @@ const Confirmation = ({ route, navigation }) => {
     jobDetails = "Không có chi tiết công việc", 
     totalPrice = "0 VND" 
   } = route?.params || {};
-  
+  const [selectedMethod, setSelectedMethod] = useState('Tiền mặt'); // Default is "Tiền mặt"
+  const [showOptions, setShowOptions] = useState(false); 
   const { quantity,selectedTime, selectedService, selectedAddress, selectedDay, serviceType,dynamicPrice } = route.params;
   const hours = (serviceType === '64fdb1f1c912ef0012e23b49')
   ? (selectedService && selectedService.match(/\d+/) ? parseInt(selectedService.match(/\d+/)[0], 10) : 0)
@@ -91,7 +93,7 @@ const Confirmation = ({ route, navigation }) => {
         </Text>
         {/* Parse jobTime and jobDuration for calculation */}
         <Text style={styles.detailValue}>
-          Làm trong {selectedService} giờ, từ {jobTime}:00 đến {parseInt(jobTime, 10) + parseInt(jobDuration, 10)}:00
+          Làm trong {hours} giờ, từ {selectedTime.getHours()} h
         </Text>
 
         <Text style={styles.detailText}>Chi tiết công việc</Text>
@@ -100,13 +102,67 @@ const Confirmation = ({ route, navigation }) => {
 
       {/* Payment Method */}
       <Text style={styles.sectionTitle}>Phương thức thanh toán</Text>
-      <View style={styles.paymentMethod}>
-        <Text style={styles.methodText}>Tiền mặt</Text>
-        <TouchableOpacity>
-          <Ionicons name="chevron-forward-outline" size={20} color="#000" />
-        </TouchableOpacity>
-      </View>
 
+      {/* Default payment method */}
+      <TouchableOpacity
+        style={styles.paymentMethod}
+        onPress={() => setShowOptions(!showOptions)}
+      >
+        <Text style={styles.methodText}>{selectedMethod}</Text>
+        <Ionicons
+          name={showOptions ? 'chevron-up-outline' : 'chevron-down-outline'}
+          size={20}
+          color="#000"
+        />
+      </TouchableOpacity>
+
+      {/* Payment options */}
+      {showOptions && (
+        <View style={styles.optionsContainer}>
+          <TouchableOpacity
+            style={[
+              styles.option,
+              selectedMethod === 'Tiền mặt' && styles.selectedOption,
+            ]}
+            onPress={() => {
+              setSelectedMethod('Tiền mặt');
+              setShowOptions(false);
+            }}
+          >
+            <Text style={styles.optionText}>Tiền mặt</Text>
+            {selectedMethod === 'Tiền mặt' && (
+              <Ionicons name="checkmark-circle" size={20} color="#00c853" />
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.option,
+              selectedMethod === 'Chuyển khoản' && styles.selectedOption,
+            ]}
+            onPress={() => {
+              setSelectedMethod('Chuyển khoản');
+              setShowOptions(false);
+            }}
+          >
+            <Text style={styles.optionText}>Chuyển khoản</Text>
+            {selectedMethod === 'Chuyển khoản' && (
+              <Ionicons name="checkmark-circle" size={20} color="#00c853" />
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* QR Code Image Display */}
+      {selectedMethod === 'Chuyển khoản' && (
+        <View style={styles.qrContainer}>
+          <Text style={styles.qrText}>Quét mã QR để thanh toán</Text>
+          <Image
+            source={require('../../img/qr.jpg')} // Replace with your QR code image path
+            style={styles.qrImage}
+            resizeMode="contain"
+          />
+        </View>
+      )}
       {/* Total */}
       <View style={styles.footer}>
         <Text style={styles.totalText}>Tổng cộng</Text>
@@ -221,6 +277,58 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  paymentMethod: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 15,
+    borderRadius: 10,
+    backgroundColor: '#f7f7f7',
+    marginBottom: 10,
+  },
+  methodText: {
+    fontSize: 16,
+    color: '#000',
+  },
+  optionsContainer: {
+    backgroundColor: '#f7f7f7',
+    borderRadius: 10,
+    paddingVertical: 10,
+  },
+  option: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  selectedOption: {
+    backgroundColor: '#e8f5e9',
+  },
+  optionText: {
+    fontSize: 16,
+    color: '#000',
+  },
+  qrContainer: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  qrText: {
+    fontSize: 16,
+    marginBottom: 10,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  qrImage: {
+    width: 200, // Adjust size of the QR code image
+    height: 150,
   },
 });
 

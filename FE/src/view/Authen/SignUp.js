@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,13 +6,45 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const SignUp = ({ navigation }) => {
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const togglePasswordVisibility = () => {
-    setPasswordVisible(!isPasswordVisible);
+  const togglePasswordVisibility = () => setPasswordVisible(!isPasswordVisible);
+  const toggleConfirmPasswordVisibility = () => setConfirmPasswordVisible(!isConfirmPasswordVisible);
+
+  // Validation checks
+  const validateForm = () => {
+    if (!name.trim()) {
+      Alert.alert('Error', 'Họ tên không được để trống.');
+      return false;
+    }
+    if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {
+      Alert.alert('Error', 'Email không hợp lệ.');
+      return false;
+    }
+    if (!phone.trim() || !/^\d{10,11}$/.test(phone)) {
+      Alert.alert('Error', 'Số điện thoại phải có 10-11 chữ số.');
+      return false;
+    }
+    if (!password.trim() || password.length < 6) {
+      Alert.alert('Error', 'Mật khẩu phải chứa ít nhất 6 ký tự.');
+      return false;
+    }
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Mật khẩu xác nhận không khớp.');
+      return false;
+    }
+    return true;
   };
-  
-  const toggleConfirmPasswordVisibility = () => {
-    setConfirmPasswordVisible(!isConfirmPasswordVisible);
+
+  // Submit handler
+  const handleSignUp = () => {
+    if (validateForm()) {
+      navigation.navigate('Verification',{ email}); // Navigate to verification screen
+    }
   };
 
   return (
@@ -30,19 +62,36 @@ const SignUp = ({ navigation }) => {
         {/* Name input */}
         <View style={styles.inputContainer}>
           <Ionicons name="person-outline" size={25} color="black" style={styles.icon} />
-          <TextInput placeholder="Nhập họ tên của bạn" style={styles.input} />
+          <TextInput
+            placeholder="Nhập họ tên của bạn"
+            style={styles.input}
+            value={name}
+            onChangeText={setName}
+          />
         </View>
 
         {/* Email input */}
         <View style={styles.inputContainer}>
           <Ionicons name="mail-outline" size={25} color="black" style={styles.icon} />
-          <TextInput placeholder="Nhập email của bạn" style={styles.input} />
+          <TextInput
+            placeholder="Nhập email của bạn"
+            style={styles.input}
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+          />
         </View>
 
         {/* Phone number input */}
         <View style={styles.inputContainer}>
           <Ionicons name="call-outline" size={25} color="black" style={styles.icon} />
-          <TextInput placeholder="Nhập số điện thoại của bạn" style={styles.input} />
+          <TextInput
+            placeholder="Nhập số điện thoại của bạn"
+            style={styles.input}
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="phone-pad"
+          />
         </View>
 
         {/* Password input */}
@@ -52,6 +101,8 @@ const SignUp = ({ navigation }) => {
             placeholder="Nhập mật khẩu của bạn"
             style={styles.input}
             secureTextEntry={!isPasswordVisible}
+            value={password}
+            onChangeText={setPassword}
           />
           <TouchableOpacity onPress={togglePasswordVisibility}>
             <Ionicons name={isPasswordVisible ? 'eye-outline' : 'eye-off-outline'} size={25} color="black" />
@@ -65,6 +116,8 @@ const SignUp = ({ navigation }) => {
             placeholder="Xác nhận lại mật khẩu"
             style={styles.input}
             secureTextEntry={!isConfirmPasswordVisible}
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
           />
           <TouchableOpacity onPress={toggleConfirmPasswordVisibility}>
             <Ionicons name={isConfirmPasswordVisible ? 'eye-outline' : 'eye-off-outline'} size={25} color="black" />
@@ -74,7 +127,7 @@ const SignUp = ({ navigation }) => {
 
       {/* Sign up button and other links */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.signUpButton} onPress={() => navigation.navigate('SignIn')}>
+        <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
           <Text style={styles.signUpButtonText}>Đăng ký</Text>
         </TouchableOpacity>
 

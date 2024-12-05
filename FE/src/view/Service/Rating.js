@@ -9,9 +9,9 @@ import * as SecureStore from 'expo-secure-store';
 
 const Rating = ({ navigation, route }) => {
   const { jobId, jobDetails, onRatingSubmitted } = route.params || {};
-  const workerName = jobDetails?.worker?.full_name || 'Worker Name';
+  const workerName = jobDetails?.worker?.name || 'Worker Name';
   const workerAvatar = jobDetails?.worker?.avatar || 'https://via.placeholder.com/50';
-
+  
   // State variables
   const [workerRating, setWorkerRating] = useState(0);
   const [serviceRating, setServiceRating] = useState(0);

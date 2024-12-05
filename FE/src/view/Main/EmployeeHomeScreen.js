@@ -10,6 +10,42 @@ const EmployeeHomeScreen = ({ navigation }) => {
   const [activeTab, setActiveTab] = useState(1)
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(true)
+  const [isVerified, setIsVerified] = useState(null) 
+
+  const checkVerificationStatus = async () => {
+    try {
+      const token = await SecureStore.getItemAsync('authToken')
+      if (!token) {
+        throw new Error('Token not found. Please login again.')
+      }
+
+      const response = await fetch(`${API_URL}/worker`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setIsVerified(data.isVerified) // Lấy trạng thái từ API
+        if (data.isVerified === 'pending') {
+          Alert.alert(
+            'Tài khoản đang chờ xét duyệt',
+            'Tài khoản của bạn đang chờ xét duyệt, vui lòng quay lại sau.',
+            [{ text: 'OK', onPress: () => navigation.navigate('EmployeeSignIn') }]
+          )
+        }
+      } else {
+        console.error('Error fetching verification status:', data.message)
+      }
+    } catch (error) {
+      console.error('Error checking verification status:', error)
+    }
+  }
 
   const fetchJobs = async () => {
     setLoading(true)
@@ -45,10 +81,12 @@ const EmployeeHomeScreen = ({ navigation }) => {
       setLoading(false)
     }
   }
-
   useEffect(() => {
-    fetchJobs()
-  }, [activeTab])
+    checkVerificationStatus() // Kiểm tra trạng thái tài khoản khi tải màn hình
+  }, [])
+  useEffect(() => {
+    if (isVerified === 'approved') fetchJobs() 
+  }, [activeTab, isVerified])
 
   const renderJobStatus = (status) => {
     switch (status) {
