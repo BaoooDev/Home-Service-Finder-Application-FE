@@ -43,7 +43,7 @@ const SignUp = ({ navigation }) => {
   // Submit handler
   const handleSignUp = () => {
     if (validateForm()) {
-      navigation.navigate('Verification',{ email}); // Navigate to verification screen
+      navigation.navigate('Home',{ email}); // Navigate to verification screen
     }
   };
 

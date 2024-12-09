@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView ,Image} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView ,Image, Modal,} from 'react-native';
 import { Ionicons } from 'react-native-vector-icons';
 import { API_URL } from '@env';
 import * as SecureStore from "expo-secure-store";
@@ -24,6 +24,15 @@ const Confirmation = ({ route, navigation }) => {
   ? (selectedService && selectedService.match(/\d+/) ? parseInt(selectedService.match(/\d+/)[0], 10) : 0)
   : quantity;
 
+  const [isModalVisible, setIsModalVisible] = useState(false); // Show/Hide QR Code modal
+
+  const handlePaymentSelect = (method) => {
+    setSelectedMethod(method);
+    setShowOptions(false);
+    if (method === 'Chuyển khoản') {
+      setIsModalVisible(true); // Show modal if "Chuyển khoản" is selected
+    }
+  };
   const handleJobSubmit = async () => {
     // Prepare the data for the API
     const jobData = {
@@ -124,10 +133,7 @@ const Confirmation = ({ route, navigation }) => {
               styles.option,
               selectedMethod === 'Tiền mặt' && styles.selectedOption,
             ]}
-            onPress={() => {
-              setSelectedMethod('Tiền mặt');
-              setShowOptions(false);
-            }}
+            onPress={() => handlePaymentSelect('Tiền mặt')}
           >
             <Text style={styles.optionText}>Tiền mặt</Text>
             {selectedMethod === 'Tiền mặt' && (
@@ -139,10 +145,7 @@ const Confirmation = ({ route, navigation }) => {
               styles.option,
               selectedMethod === 'Chuyển khoản' && styles.selectedOption,
             ]}
-            onPress={() => {
-              setSelectedMethod('Chuyển khoản');
-              setShowOptions(false);
-            }}
+            onPress={() => handlePaymentSelect('Chuyển khoản')}
           >
             <Text style={styles.optionText}>Chuyển khoản</Text>
             {selectedMethod === 'Chuyển khoản' && (
@@ -152,17 +155,35 @@ const Confirmation = ({ route, navigation }) => {
         </View>
       )}
 
-      {/* QR Code Image Display */}
-      {selectedMethod === 'Chuyển khoản' && (
-        <View style={styles.qrContainer}>
-          <Text style={styles.qrText}>Quét mã QR để thanh toán</Text>
-          <Image
-            source={require('../../img/qr.jpg')} // Replace with your QR code image path
-            style={styles.qrImage}
-            resizeMode="contain"
-          />
+      {/* QR Code Modal */}
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Quét mã QR để thanh toán</Text>
+            <Image
+              source={require('../../img/qr.jpg')} // Replace with your QR code image path
+              style={styles.qrImage}
+              resizeMode="contain"
+            />
+            <TouchableOpacity
+              style={styles.okButton}
+              onPress={() => {
+                setIsModalVisible(false); // Đóng modal
+                handleJobSubmit(); // Thực hiện gửi công việc
+              }}
+            >
+              <Text   style={styles.okButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      )}
+      </Modal>
+      
+    
       {/* Total */}
       <View style={styles.footer}>
         <Text style={styles.totalText}>Tổng cộng</Text>
@@ -326,9 +347,39 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
   },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
   qrImage: {
-    width: 200, // Adjust size of the QR code image
-    height: 150,
+    width: 200,
+    height: 200,
+    marginBottom: 20,
+  },
+  okButton: {
+    backgroundColor: '#00c853',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  okButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

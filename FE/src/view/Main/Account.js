@@ -21,7 +21,7 @@ const AccountScreen = ({ navigation }) => { // Khởi tạo navigation
               style={styles.avatar}
             />
             <View style={styles.userDetails}>
-              <Text style={styles.userName}>Bảo</Text>
+              <Text style={styles.userName}>.</Text>
               <TouchableOpacity>
                 <Text style={styles.viewProfileText}>Xem hồ sơ</Text>
               </TouchableOpacity>

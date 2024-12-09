@@ -60,7 +60,7 @@ const TimeSelection = ({ navigation, route }) => {
     if (daysUntilService <= 0) {
       calculatedPrice *= 1.5; // 50% surcharge if within 1 day
     } else if (daysUntilService <= 1) {
-      calculatedPrice *= 1.2; // 20% surcharge if within 3 days
+      calculatedPrice *= 1.2; // 20% surcharge if within 1 days
     }
 
     // Example Holiday Surcharge (30%)

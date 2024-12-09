@@ -139,7 +139,7 @@ const JobDetail = ({ navigation, route }) => {
               </View>
               <View style={styles.row}>
                 <MaterialIcons name="phone" size={20} color={colors.text} />
-                <Paragraph style={styles.subText}>Số điện thoại: {jobDetails.worker.phone_number}</Paragraph>
+                <Paragraph style={styles.subText}>Số điện thoại: {jobDetails.worker.phone}</Paragraph>
               </View>
               <View style={styles.row}>
                 <MaterialIcons name="star" size={20} color={colors.text} />
