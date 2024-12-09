@@ -75,7 +75,7 @@ export default function EmployeeReport({ navigation }) {
           <View style={styles.metricsContainer}>
             <View style={styles.metricBox}>
               <Text style={styles.metricLabel}>Công việc hoàn thành</Text>
-              <Text style={styles.metricValue}>{dashboard?.completed_jobs}/5</Text>
+              <Text style={styles.metricValue}>{dashboard?.current_month_completed_jobs}/5</Text>
             </View>
             <View style={styles.metricBox}>
               <Text style={styles.metricLabel}>Thu nhập tháng này</Text>

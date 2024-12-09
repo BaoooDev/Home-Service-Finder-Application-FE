@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Image, TouchableWithoutFeedback, Keyboard, Modal } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Image,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Modal,
+} from 'react-native';
 import { Button, Title } from 'react-native-paper';
 import { AirbnbRating } from 'react-native-ratings';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { API_URL } from '@env';
 import * as SecureStore from 'expo-secure-store';
 
 const Rating = ({ navigation, route }) => {
-  const { jobId, jobDetails, onRatingSubmitted } = route.params || {};
-  const workerName = jobDetails?.worker?.name || 'Worker Name';
-  const workerAvatar = jobDetails?.worker?.avatar || 'https://via.placeholder.com/50';
-  
+  const { jobId, jobDetails = {}, onRatingSubmitted } = route.params || {};
+  const workerName = jobDetails?.worker?.name ?? 'Người giúp việc';
+  const workerAvatar = jobDetails?.worker?.avatar ?? 'https://via.placeholder.com/50';
+
   // State variables
   const [workerRating, setWorkerRating] = useState(0);
   const [serviceRating, setServiceRating] = useState(0);
@@ -36,7 +44,7 @@ const Rating = ({ navigation, route }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           workerRating,
@@ -50,7 +58,7 @@ const Rating = ({ navigation, route }) => {
 
       if (response.ok && data.success) {
         setShowModal(true); // Show success modal
-        onRatingSubmitted(); // Notify JobDetail screen that the rating was submitted
+        onRatingSubmitted?.(); // Notify parent about the submission
       } else {
         console.error('Failed to submit rating:', data.message);
       }
@@ -73,10 +81,10 @@ const Rating = ({ navigation, route }) => {
             <Title>Đánh giá người giúp việc</Title>
             <AirbnbRating
               count={5}
-              reviews={["Tệ", "Không tốt", "Bình thường", "Tốt", "Tuyệt vời"]}
-              defaultRating={workerRating}
+              reviews={['Tệ', 'Không tốt', 'Bình thường', 'Tốt', 'Tuyệt vời']}
+              defaultRating={0}
               size={30}
-              onFinishRating={(rating) => setWorkerRating(rating)}
+              onFinishRating={setWorkerRating}
             />
             <TextInput
               style={styles.textInput}
@@ -96,10 +104,10 @@ const Rating = ({ navigation, route }) => {
             <Title>Đánh giá dịch vụ</Title>
             <AirbnbRating
               count={5}
-              reviews={["Tệ", "Không tốt", "Bình thường", "Tốt", "Tuyệt vời"]}
-              defaultRating={serviceRating}
+              reviews={['Tệ', 'Không tốt', 'Bình thường', 'Tốt', 'Tuyệt vời']}
+              defaultRating={0}
               size={30}
-              onFinishRating={(rating) => setServiceRating(rating)}
+              onFinishRating={setServiceRating}
             />
             <TextInput
               style={styles.textInput}
@@ -112,7 +120,12 @@ const Rating = ({ navigation, route }) => {
           </View>
 
           {/* Submit Button */}
-          <Button mode="contained" style={styles.submitButton} onPress={handleSubmit}>
+          <Button
+            mode="contained"
+            style={styles.submitButton}
+            onPress={handleSubmit}
+            accessibilityLabel="Gửi đánh giá"
+          >
             Gửi đánh giá
           </Button>
 
@@ -125,8 +138,16 @@ const Rating = ({ navigation, route }) => {
           >
             <View style={styles.modalOverlay}>
               <View style={styles.modalContent}>
-                <Text style={styles.modalText}>Đã gửi đánh giá! Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.</Text>
-                <Button onPress={() => { setShowModal(false); navigation.goBack(); }}>
+                <Text style={styles.modalText}>
+                  Đã gửi đánh giá! Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.
+                </Text>
+                <Button
+                  onPress={() => {
+                    setShowModal(false);
+                    navigation.goBack();
+                  }}
+                  accessibilityLabel="Close feedback modal"
+                >
                   OK
                 </Button>
               </View>
