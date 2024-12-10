@@ -22,7 +22,6 @@ const TimeSelection = ({ navigation, route }) => {
     setShowPicker(false);
   };
 
-  // Automatically generate days from today up to the next 7 days
   useEffect(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -37,7 +36,6 @@ const TimeSelection = ({ navigation, route }) => {
     setSelectedDay(upcomingDays[0]);
   }, []);
 
-  // Recalculate price when selectedDay or other factors change
   useEffect(() => {
     if (selectedDay) {
       calculateDynamicPrice(selectedDay);
@@ -48,7 +46,7 @@ const TimeSelection = ({ navigation, route }) => {
     const hours = parseInt(selectedService);
     let calculatedPrice = totalPrice;
     // Apply surcharges based on selected day and other conditions
-    const isWeekend = day.getDay() === 7 || day.getDay() === 0; // Saturday or Sunday
+    const isWeekend = day.getDay() === 1 || day.getDay() === 0; // Saturday or Sunday
     const daysUntilService = Math.ceil((day - new Date()) / (1000 * 60 * 60 * 24)); // Days difference
 
     // Weekend Surcharge (20%)
@@ -94,9 +92,14 @@ const TimeSelection = ({ navigation, route }) => {
       onPress={() => setSelectedDay(day)}
     >
       <Text style={styles.dayText}>
-        {day.getDay() === 1 ? 'CN' : `T${day.getDay()}`} {/* Display 'CN' for Sunday */}
-      </Text>
-      <Text style={styles.dateText}>{day.getDate()}</Text>
+        {day.getDay() === 0
+        ? 'T7' 
+        : day.getDay() === 1
+        ? 'CN' 
+        : `T${day.getDay()}`} 
+    </Text>
+    <Text style={styles.dateText}>{day.getDate()}</Text>
+
     </TouchableOpacity>
   ))}
 </View>

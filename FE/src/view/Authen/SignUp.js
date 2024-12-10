@@ -82,17 +82,6 @@ const SignUp = ({ navigation }) => {
           />
         </View>
 
-        {/* Phone number input */}
-        <View style={styles.inputContainer}>
-          <Ionicons name="call-outline" size={25} color="black" style={styles.icon} />
-          <TextInput
-            placeholder="Nhập số điện thoại của bạn"
-            style={styles.input}
-            value={phone}
-            onChangeText={setPhone}
-            keyboardType="phone-pad"
-          />
-        </View>
 
         {/* Password input */}
         <View style={styles.inputContainer}>
