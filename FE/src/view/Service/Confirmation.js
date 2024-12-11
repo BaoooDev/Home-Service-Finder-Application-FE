@@ -94,13 +94,23 @@ const Confirmation = ({ route, navigation }) => {
 
       {/* Job Details */}
       <Text style={styles.sectionTitle}>Thông tin công việc</Text>
+      
       <View style={styles.jobDetails}>
+      <Text style={styles.detailText}>
+        Dịch vụ: {
+          serviceType === '64fdb1f1c912ef0012e23b49'
+            ? 'Dọn dẹp nhà'
+            : serviceType === '67316a9cac4d58ac2c65339f'
+            ? 'Vệ sinh máy lạnh'
+            : serviceType === '6730520722f42b6ef515c7b9'
+            ? 'Vệ sinh máy giặt'
+            : 'Không xác định'
+        }
+      </Text>
         <Text style={styles.detailText}>Thời gian làm việc</Text>
-        {/* Format the selectedDay */}
         <Text style={styles.detailValue}>
           Ngày làm việc: {selectedDay ? selectedDay.toLocaleDateString('vi-VN') : 'Chưa chọn ngày'}
         </Text>
-        {/* Parse jobTime and jobDuration for calculation */}
         <Text style={styles.detailValue}>
           Làm trong {hours} giờ, từ {selectedTime.getHours()} h
         </Text>
@@ -157,31 +167,44 @@ const Confirmation = ({ route, navigation }) => {
 
       {/* QR Code Modal */}
       <Modal
-        visible={isModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setIsModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Quét mã QR để thanh toán</Text>
-            <Image
-              source={require('../../img/qr.jpg')} // Replace with your QR code image path
-              style={styles.qrImage}
-              resizeMode="contain"
-            />
-            <TouchableOpacity
-              style={styles.okButton}
-              onPress={() => {
-                setIsModalVisible(false); // Đóng modal
-                handleJobSubmit(); // Thực hiện gửi công việc
-              }}
-            >
-              <Text   style={styles.okButtonText}>OK</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+  visible={isModalVisible}
+  transparent={true}
+  animationType="slide"
+  onRequestClose={() => setIsModalVisible(false)} // Close on back press (Android)
+>
+  <TouchableOpacity
+    style={styles.modalOverlay}
+    activeOpacity={1}
+    onPressOut={() => setIsModalVisible(false)} // Dismiss on tapping outside
+  >
+    <View style={styles.modalContainer}>
+      <View style={styles.modalContent}>
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={() => setIsModalVisible(false)} // Close modal on "X" button
+        >
+          <Text style={styles.closeButtonText}>X</Text>
+        </TouchableOpacity>
+        <Text style={styles.modalTitle}>Quét mã QR để thanh toán</Text>
+        <Image
+          source={require('../../img/qr.jpg')} // Replace with your QR code image path
+          style={styles.qrImage}
+          resizeMode="contain"
+        />
+        <TouchableOpacity
+          style={styles.okButton}
+          onPress={() => {
+            setIsModalVisible(false); // Close modal
+            handleJobSubmit(); // Perform job submission
+          }}
+        >
+          <Text style={styles.okButtonText}>OK</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </TouchableOpacity>
+</Modal>
+
       
     
       {/* Total */}
@@ -347,23 +370,27 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
   },
-  modalContainer: {
+  modalOverlay: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dim background
   },
-  modalContent: {
+  modalContainer: {
     width: '80%',
     backgroundColor: '#fff',
     borderRadius: 10,
     padding: 20,
+    position: 'relative', // For close button positioning
+  },
+  modalContent: {
     alignItems: 'center',
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 20,
+    textAlign: 'center',
   },
   qrImage: {
     width: 200,
@@ -375,11 +402,28 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
+    alignItems: 'center',
   },
   okButtonText: {
     color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#333',
   },
 });
 

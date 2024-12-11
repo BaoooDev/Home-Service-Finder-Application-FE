@@ -31,17 +31,24 @@ const EmployeeHomeScreen = ({ navigation }) => {
       const data = await response.json()
 
       if (response.ok) {
-        setIsVerified(data.isVerified) // Lấy trạng thái từ API
+        setIsVerified(data.isVerified); // Set the verification status from API
         if (data.isVerified === 'pending') {
           Alert.alert(
             'Tài khoản đang chờ xét duyệt',
             'Tài khoản của bạn đang chờ xét duyệt, vui lòng quay lại sau.',
             [{ text: 'OK', onPress: () => navigation.navigate('EmployeeSignIn') }]
-          )
+          );
+        } else if (data.isVerified === 'blocked') {
+          Alert.alert(
+            'Tài khoản bị khóa',
+            'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ 0869636912 để biết thêm chi tiết.',
+            [{ text: 'OK', onPress: () => navigation.navigate('EmployeeSignIn') }]
+          );
         }
       } else {
-        console.error('Error fetching verification status:', data.message)
-      }
+        // If response is not ok
+        console.error('Error fetching verification status:', data.message);
+      }      
     } catch (error) {
       console.error('Error checking verification status:', error)
     }

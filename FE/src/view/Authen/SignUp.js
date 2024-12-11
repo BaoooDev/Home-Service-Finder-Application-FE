@@ -2,13 +2,14 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert } fro
 import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { API_URL } from '@env';
+import * as SecureStore from 'expo-secure-store';
 
 const SignUp = ({ navigation }) => {
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
@@ -25,10 +26,6 @@ const SignUp = ({ navigation }) => {
       Alert.alert('Error', 'Email không hợp lệ.');
       return false;
     }
-    if (!phone.trim() || !/^\d{10,11}$/.test(phone)) {
-      Alert.alert('Error', 'Số điện thoại phải có 10-11 chữ số.');
-      return false;
-    }
     if (!password.trim() || password.length < 6) {
       Alert.alert('Error', 'Mật khẩu phải chứa ít nhất 6 ký tự.');
       return false;
@@ -41,11 +38,38 @@ const SignUp = ({ navigation }) => {
   };
 
   // Submit handler
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (validateForm()) {
-      navigation.navigate('Home',{ email}); // Navigate to verification screen
+      try {
+        const response = await fetch(`${API_URL}/users/registerClient`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            full_name: name,
+            email: email,
+            password: password,
+          }),
+        });
+  
+        const result = await response.json();
+  
+        if (response.ok) {
+
+          Alert.alert('Success', 'Đăng ký thành công!');
+          await SecureStore.setItemAsync('authToken', result.token.toString());
+        navigation.navigate('TabNavigationContainer');
+        } else {
+          Alert.alert('Error', result.message || 'Đăng ký thất bại.');
+        }
+      } catch (error) {
+        Alert.alert('Error', 'Có lỗi xảy ra. Vui lòng thử lại.');
+        console.error('Sign Up Error:', error);
+      }
     }
   };
+  
 
   return (
     <SafeAreaView style={styles.container}>

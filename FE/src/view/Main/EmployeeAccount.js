@@ -86,7 +86,7 @@ const EmployeeAccountScreen = ({ navigation }) => {
         <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('EmployeeHistories')}>
           <Text style={styles.menuTitle}>Lịch sử thu nhập</Text>
           <View>
-            <Text style={styles.menuSubtitle}>Thu nhập tháng này: {me?.total_income}₫</Text>
+            <Text style={styles.menuSubtitle}>Thu nhập tuần này: {me?.total_income}₫</Text>
           </View>
         </TouchableOpacity>
       </ScrollView>

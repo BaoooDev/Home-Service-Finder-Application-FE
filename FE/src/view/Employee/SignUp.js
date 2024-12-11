@@ -46,9 +46,7 @@ const EmployeeSignUp = ({ navigation }) => {
         },
         body: JSON.stringify(values),
       })
-      console.log('====================================');
-      console.log(values.email);
-      console.log('====================================');
+   
       const result = await response.json()
 
       if (response.ok) {
