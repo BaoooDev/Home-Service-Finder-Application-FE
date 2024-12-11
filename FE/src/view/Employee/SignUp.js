@@ -46,12 +46,22 @@ const EmployeeSignUp = ({ navigation }) => {
         },
         body: JSON.stringify(values),
       })
-
+      console.log('====================================');
+      console.log(values.email);
+      console.log('====================================');
       const result = await response.json()
 
       if (response.ok) {
+        const sendOtpResponse = await fetch(`${API_URL}/users/send-otp`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: values.email }),
+        });
+        const opt = await sendOtpResponse.json()
         await SecureStore.setItemAsync('authToken', result.token.toString())
-        navigation.navigate('EmployeeServiceType')
+        navigation.navigate('EmployeeVerification', { email: values.email })
       } else {
         Alert.alert('Đăng ký thất bại', result.msg)
       }

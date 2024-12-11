@@ -4,38 +4,33 @@ import {
   View,
   TouchableOpacity,
   TextInput,
+  Alert,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { API_URL } from "@env";
 
-const CountdownTimer = ({ initialSeconds }) => {
+const CountdownTimer = ({ initialSeconds, onResend }) => {
   const [seconds, setSeconds] = useState(initialSeconds);
   const [isCounting, setIsCounting] = useState(true);
 
   useEffect(() => {
     if (seconds === 0) {
-      setIsCounting(false); // Khi đếm ngược xong thì dừng lại
+      setIsCounting(false); // Stop counting
       return;
     }
 
     const intervalId = setInterval(() => {
-      setSeconds((prevSeconds) => {
-        if (prevSeconds <= 1) {
-          clearInterval(intervalId);
-          return 0;
-        }
-        return prevSeconds - 1;
-      });
+      setSeconds((prevSeconds) => prevSeconds - 1);
     }, 1000);
 
-    // Clean up interval on component unmount
-    return () => clearInterval(intervalId);
+    return () => clearInterval(intervalId); // Cleanup
   }, [seconds]);
 
   const handleResend = () => {
-    setSeconds(initialSeconds); // Reset thời gian đếm ngược
-    setIsCounting(true); // Bắt đầu lại bộ đếm
-    // onResend && onResend(); // Gọi hàm onResend nếu có
+    setSeconds(initialSeconds); // Reset countdown
+    setIsCounting(true);
+    onResend && onResend(); // Trigger resend function
   };
 
   return (
@@ -59,24 +54,70 @@ const formatTime = (seconds) => {
     .padStart(2, "0")}`;
 };
 
-const EmployeeVerification = ({ navigation }) => {
-  const [values, setValues] = useState(["", "", "", ""]);
+const EmployeeVerification = ({ route, navigation }) => {
+  const { email } = route.params; 
+  const [otpValues, setOtpValues] = useState(["", "", "", "", "", ""]); 
+  const [isVerifying, setIsVerifying] = useState(false);
 
   const handleChange = (text, index) => {
-    const newValues = [...values];
+    const newValues = [...otpValues];
     newValues[index] = text;
-    setValues(newValues);
+    setOtpValues(newValues);
+  };
+
+  const handleVerifyOTP = async () => {
+    const otp = otpValues.join(""); // Combine OTP digits
+    if (otp.length !== 6) {
+      Alert.alert("Lỗi", "OTP phải đủ 6 chữ số");
+      return;
+    }
+
+    try {
+      setIsVerifying(true);
+      const response = await fetch(`${API_URL}/users/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        Alert.alert("Thành công", "Xác thực OTP thành công");
+        navigation.navigate("EmployeeServiceType"); // Navigate to the home screen
+      } else {
+        Alert.alert("Lỗi", result.message || "Xác thực OTP thất bại");
+      }
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+      Alert.alert("Lỗi", "Không thể xác thực OTP. Vui lòng thử lại.");
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const resendOTP = async () => {
+    try {
+      const response = await fetch(`${API_URL}/users/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        Alert.alert("Thành công", "Mã OTP đã được gửi lại");
+      } else {
+        Alert.alert("Lỗi", result.message || "Không thể gửi lại OTP");
+      }
+    } catch (error) {
+      console.error("Error resending OTP:", error);
+      Alert.alert("Lỗi", "Không thể gửi lại OTP. Vui lòng thử lại.");
+    }
   };
 
   return (
     <View style={styles.appContainer}>
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          marginTop: 20,
-        }}
-      >
+      <View style={{ flex: 1, justifyContent: "center", marginTop: 20 }}>
         <TouchableOpacity
           style={{ marginLeft: 15 }}
           onPress={() => navigation.goBack()}
@@ -85,19 +126,13 @@ const EmployeeVerification = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      <View
-        style={{
-          flex: 8.2,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      <View style={{ flex: 8.2, alignItems: "center", justifyContent: "center" }}>
         <View style={{ width: "85%", height: "100%", paddingTop: 24 }}>
           <Text style={{ fontWeight: "bold", fontSize: 26 }}>Xác Thực</Text>
           <View style={{ width: 300, height: 60 }}>
             <Text style={{ fontSize: 17, marginTop: 10 }}>
-              Chúng tôi sẽ gửi mã xác thực đến {""}
-              <Text style={{ fontSize: 17 }}>vanchanh0730@gmail.com</Text>
+              Mã xác thực đã được gửi đến:{" "}
+              <Text style={{ fontWeight: "bold" }}>{email}</Text>
             </Text>
           </View>
 
@@ -112,11 +147,11 @@ const EmployeeVerification = ({ navigation }) => {
               marginLeft: -7,
             }}
           >
-            {values.map((value, index) => (
+            {otpValues.map((value, index) => (
               <TextInput
                 key={index}
                 style={{
-                  width: "21%",
+                  width: "14%",
                   height: "100%",
                   borderWidth: 1.5,
                   borderRadius: 20,
@@ -129,7 +164,7 @@ const EmployeeVerification = ({ navigation }) => {
                 value={value}
                 onChangeText={(text) => handleChange(text, index)}
                 keyboardType="numeric"
-                maxLength={1} // Giới hạn chỉ nhập 1 ký tự
+                maxLength={1} // Allow only 1 digit
               />
             ))}
           </View>
@@ -152,9 +187,12 @@ const EmployeeVerification = ({ navigation }) => {
                 alignItems: "center",
                 marginTop: 12,
               }}
-              onPress={() => navigation.navigate("ResetPassword")}
+              onPress={handleVerifyOTP}
+              disabled={isVerifying}
             >
-              <Text style={{ color: "white", fontSize: 20 }}>Tiếp tục</Text>
+              <Text style={{ color: "white", fontSize: 20 }}>
+                {isVerifying ? "Đang xử lý..." : "Tiếp tục"}
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -162,16 +200,13 @@ const EmployeeVerification = ({ navigation }) => {
             style={{
               width: "100%",
               height: 40,
-              // justifyContent: "center",
               alignItems: "center",
               marginTop: 5,
             }}
           >
             <Text style={{ fontSize: 17 }}>
-              Gửi lại mã trong
-              <TouchableOpacity>
-                <CountdownTimer initialSeconds={60} />
-              </TouchableOpacity>
+              Gửi lại mã trong{" "}
+              <CountdownTimer initialSeconds={60} onResend={resendOTP} />
             </Text>
           </View>
         </View>
