@@ -10,6 +10,7 @@ const AccountScreen = ({ navigation }) => { // Khởi tạo navigation
     navigation.navigate('SignIn');// replace để ngăn quay lại màn hình hiện tại
   };
 
+  
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>

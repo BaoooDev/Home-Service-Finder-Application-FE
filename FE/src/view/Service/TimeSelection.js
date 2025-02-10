@@ -36,6 +36,7 @@ const TimeSelection = ({ navigation, route }) => {
     setSelectedDay(upcomingDays[0]);
   }, []);
 
+  
   useEffect(() => {
     if (selectedDay) {
       calculateDynamicPrice(selectedDay);

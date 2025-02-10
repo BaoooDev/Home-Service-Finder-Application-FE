@@ -49,6 +49,7 @@ const EmployeeSignUp = ({ navigation }) => {
    
       const result = await response.json()
 
+      
       if (response.ok) {
         const sendOtpResponse = await fetch(`${API_URL}/users/send-otp`, {
           method: 'POST',

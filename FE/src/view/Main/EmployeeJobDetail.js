@@ -31,6 +31,7 @@ const JobDetail = ({ navigation, route }) => {
           </Card.Content>
         </Card>
 
+
         {/* Job Details Section */}
         <Card style={styles.card}>
           <Card.Title title="Chi tiết công việc" />

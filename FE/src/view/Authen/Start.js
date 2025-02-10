@@ -15,6 +15,7 @@ const Start = ({ navigation }) => {
         <Text style={styles.welcomeText}>Xin chào bạn đến với TBKEE</Text>
         <Text style={styles.questionText}>Bạn là?</Text>
 
+
         {/* Nút cho Khách hàng */}
         <TouchableOpacity
           style={styles.button}

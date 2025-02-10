@@ -10,6 +10,7 @@ const EmployeeBenefitScreen = () => {
         <Text style={styles.headerText}>Phúc Lợi</Text>
       </View>
 
+
       {/* Content */}
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.card}>

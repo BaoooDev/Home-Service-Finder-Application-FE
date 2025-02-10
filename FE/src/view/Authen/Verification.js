@@ -12,6 +12,7 @@ const CountdownTimer = ({ initialSeconds }) => {
   const [seconds, setSeconds] = useState(initialSeconds);
   const [isCounting, setIsCounting] = useState(true);
 
+  
   useEffect(() => {
     if (seconds === 0) {
       setIsCounting(false); // Khi đếm ngược xong thì dừng lại

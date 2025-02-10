@@ -12,6 +12,7 @@ const ServiceRating = ({ navigation }) => {
     setRating(rating);
   };
 
+  
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => navigation.goBack()}>

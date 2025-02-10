@@ -44,6 +44,7 @@ const WashingMachineService = ({ navigation, route }) => {
     setDynamicPrice(totalPrice); // Set total price for a single machine
   };
 
+  
   // Recalculate price whenever `selectedType`, `isDrumRemoval`, or `serviceDetails` changes
   useEffect(() => {
     if (serviceDetails) {

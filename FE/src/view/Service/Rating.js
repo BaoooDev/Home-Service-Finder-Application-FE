@@ -20,6 +20,7 @@ const Rating = ({ navigation, route }) => {
   const workerName = jobDetails?.worker?.name ?? 'Người giúp việc';
   const workerAvatar = jobDetails?.worker?.avatar ?? 'https://via.placeholder.com/50';
 
+  
   // State variables
   const [workerRating, setWorkerRating] = useState(0);
   const [serviceRating, setServiceRating] = useState(0);

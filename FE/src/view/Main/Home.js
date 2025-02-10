@@ -7,6 +7,7 @@ const { width } = Dimensions.get('window');  // Lấy chiều rộng màn hình 
 
 const HomeScreen = ({ navigation }) => {
 
+  
   const [currentIndex, setCurrentIndex] = useState(0);  // Chỉ số banner hiện tại
   const scrollViewRef = useRef(null);  // Tạo tham chiếu cho ScrollView
   const banners = [  // Danh sách banner

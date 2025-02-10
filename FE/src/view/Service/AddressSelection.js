@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, SafeAreaView, Modal, TextInput, Alert} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, SafeAreaView, Modal, TextInput, Alert, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { API_URL } from '@env';
-import * as SecureStore from 'expo-secure-store'; // Secure storage for token
+import { API_URL, GOONG_API_KEY } from '@env'; 
+import * as SecureStore from 'expo-secure-store'; 
 
 const AddressSelection = ({ navigation, route }) => {
   const { serviceType } = route.params || {};
@@ -11,28 +11,29 @@ const AddressSelection = ({ navigation, route }) => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [newAddress, setNewAddress] = useState({
     address: '',
-    name: '', 
-    phone: '', 
+    name: '',
+    phone: '',
   });
   
+  const [suggestions, setSuggestions] = useState([]);
+  const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false);
+
   const showCustomAlert = (message) => {
     Alert.alert('Notification', message, [{ text: 'OK' }], { cancelable: true });
   };
-  
-  // Fetch JWT token
+
   const getToken = async () => {
     const token = await SecureStore.getItemAsync('authToken');
     return token;
   };
 
-  // Fetch addresses from the backend API
   const fetchAddresses = async () => {
     try {
       const token = await getToken();
       if (!token) {
         throw new Error('Token not found. Please login again.');
       }
-  
+
       const response = await fetch(`${API_URL}/client/addresses`, {
         method: 'GET',
         headers: {
@@ -41,7 +42,7 @@ const AddressSelection = ({ navigation, route }) => {
         },
       });
       const data = await response.json();
-  
+
       if (data && data.addresses) {
         setAddresses(data.addresses);
       } else {
@@ -51,13 +52,32 @@ const AddressSelection = ({ navigation, route }) => {
       console.error('Error fetching addresses:', error);
     }
   };
-    
 
-  useEffect(() => {
-    fetchAddresses(); // Fetch addresses when the component mounts
-  }, []);
+  const fetchSuggestions = async (query) => {
+    if (query.length < 2) {
+      setSuggestions([]);
+      return;
+    }
 
-  // Handle Add/Edit address
+    try {
+      setIsFetchingSuggestions(true);
+      const response = await fetch(
+        `https://rsapi.goong.io/Place/AutoComplete?api_key=${GOONG_API_KEY}&input=${encodeURIComponent(query)}`
+      );
+      const data = await response.json();
+
+      if (data && data.predictions) {
+        setSuggestions(data.predictions);
+      } else {
+        setSuggestions([]);
+      }
+    } catch (error) {
+      console.error('Error fetching suggestions:', error);
+    } finally {
+      setIsFetchingSuggestions(false);
+    }
+  };
+
   const handleAddOrEditAddress = async () => {
     try {
       const token = await getToken();
@@ -67,13 +87,11 @@ const AddressSelection = ({ navigation, route }) => {
   
       let updatedAddresses;
       if (selectedAddress) {
-        // Optimistic UI update for editing address
         updatedAddresses = addresses.map((addr) =>
           addr._id === selectedAddress._id ? { ...selectedAddress, ...newAddress } : addr
         );
         setAddresses(updatedAddresses);
   
-        // Send edit request to server
         const response = await fetch(`${API_URL}/client/edit-address`, {
           method: 'PUT',
           headers: {
@@ -90,12 +108,10 @@ const AddressSelection = ({ navigation, route }) => {
           throw new Error('Failed to update address');
         }
       } else {
-        // Optimistic UI update for adding address
-        const newId = Math.random().toString(); // Temporary ID for new address
+        const newId = Math.random().toString(); 
         updatedAddresses = [...addresses, { _id: newId, ...newAddress }];
         setAddresses(updatedAddresses);
   
-        // Send add request to server
         const response = await fetch(`${API_URL}/client/add-address`, {
           method: 'POST',
           headers: {
@@ -108,7 +124,6 @@ const AddressSelection = ({ navigation, route }) => {
         if (response.ok) {
           const result = await response.json();
           if (result.address && result.address._id) {
-            // Update the newly added address with the real ID from the server
             updatedAddresses = updatedAddresses.map((addr) =>
               addr._id === newId ? { ...addr, _id: result.address._id } : addr
             );
@@ -154,6 +169,10 @@ const AddressSelection = ({ navigation, route }) => {
     }
   };
 
+  useEffect(() => {
+    fetchAddresses(); // Fetch addresses when the component mounts
+  }, []);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
@@ -163,112 +182,117 @@ const AddressSelection = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
 
-      {/* List of addresses */}
       <FlatList
-  data={addresses}
-  keyExtractor={(item) => item._id.toString()} // Use MongoDB ObjectId as key
-  renderItem={({ item }) => (
-    <TouchableOpacity
-    style={styles.addressContainer}
-    onPress={() => {
-      if (serviceType === '64fdb1f1c912ef0012e23b49') { // ID for "Dọn dẹp nhà"
-        navigation.navigate('ServicePackage', { selectedAddress: item, serviceType });
-      } else if (serviceType === '67316a9cac4d58ac2c65339f') { // ID for "Vệ sinh máy lạnh"
-        navigation.navigate('ACService', { selectedAddress: item, serviceType });
-      } else if (serviceType === '6730520722f42b6ef515c7b9') { // ID for "Vệ sinh máy giặt"
-        navigation.navigate('WashingMachineService', { selectedAddress: item, serviceType });
-      }
-    }}
-  >
-  
-      <View style={styles.addressDetails}>
-        <Text style={styles.addressTitle}>{item.address}</Text>
-        <Text style={styles.addressSubtitle}>{item.name || 'Unnamed Client'}</Text>
-        <Text style={styles.phoneNumber}>{item.phone || 'No Phone Number'}</Text>
-      </View>
-      <View style={styles.iconContainer}>
-        <TouchableOpacity
-          onPress={() => {
-            setSelectedAddress(item);
-            setNewAddress(item);
-            setIsModalVisible(true);
-          }}
-        >
-          <Icon name="pencil-outline" size={20} color="#ff8a00" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleDeleteAddress(item._id)}>
-          <Icon name="trash-outline" size={20} color="black" />
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
-  )}
-/>
+        data={addresses}
+        keyExtractor={(item) => item._id.toString()}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.addressContainer}
+            onPress={() => {
+              if (serviceType === '64fdb1f1c912ef0012e23b49') { // ID for "Dọn dẹp nhà"
+                navigation.navigate('ServicePackage', { selectedAddress: item, serviceType });
+              } else if (serviceType === '67316a9cac4d58ac2c65339f') { // ID for "Vệ sinh máy lạnh"
+                navigation.navigate('ACService', { selectedAddress: item, serviceType });
+              } else if (serviceType === '6730520722f42b6ef515c7b9') { // ID for "Vệ sinh máy giặt"
+                navigation.navigate('WashingMachineService', { selectedAddress: item, serviceType });
+              }
+            }}
+          >
+            <View style={styles.addressDetails}>
+              <Text style={styles.addressTitle}>{item.address}</Text>
+              <Text style={styles.addressSubtitle}>{item.name || 'Unnamed Client'}</Text>
+              <Text style={styles.phoneNumber}>{item.phone || 'No Phone Number'}</Text>
+            </View>
+            <View style={styles.iconContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  setSelectedAddress(item);
+                  setNewAddress(item);
+                  setIsModalVisible(true);
+                }}
+              >
+                <Icon name="pencil-outline" size={20} color="#ff8a00" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleDeleteAddress(item._id)}>
+                <Icon name="trash-outline" size={20} color="black" />
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        )}
+      />
 
-
-      {/* Button to add new address */}
       <TouchableOpacity
         style={styles.newAddressButton}
         onPress={() => {
-          // Reset the modal fields for a new address
           setSelectedAddress(null);
-          setNewAddress({ address: '', name: '', phone: '' }); // Use 'name' and 'phone' keys
-          setIsModalVisible(true); // Show the modal for adding a new address
+          setNewAddress({ address: '', name: '', phone: '' });
+          setIsModalVisible(true);
         }}
       >
         <Text style={styles.newAddressText}>Chọn địa chỉ mới</Text>
       </TouchableOpacity>
 
-      {/* Modal for adding/editing address */}
-      <Modal
-  animationType="slide"
-  transparent={true}
-  visible={isModalVisible}
-  onRequestClose={() => setIsModalVisible(false)}
->
-  <View style={styles.modalContainer}>
-    <View style={styles.modalContent}>
-      <Text style={styles.modalTitle}>
-        {selectedAddress ? 'Chỉnh sửa địa chỉ' : 'Thêm địa chỉ mới'}
-      </Text>
+      <Modal animationType="slide" transparent={true} visible={isModalVisible}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>
+              {selectedAddress ? 'Chỉnh sửa địa chỉ' : 'Thêm địa chỉ mới'}
+            </Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Địa chỉ"
-        placeholderTextColor="#333"
-        value={newAddress.address}
-        onChangeText={(text) => setNewAddress({ ...newAddress, address: text })}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Tên khách hàng"
-        placeholderTextColor="#333"
-        value={newAddress.name} 
-        onChangeText={(text) => setNewAddress({ ...newAddress, name: text })} 
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Số điện thoại"
-        placeholderTextColor="#333"
-        value={newAddress.phone}
-        onChangeText={(text) => setNewAddress({ ...newAddress, phone: text })} 
-      />
+            <TextInput
+              style={styles.input}
+              placeholder="Địa chỉ"
+              placeholderTextColor="#333"
+              value={newAddress.address}
+              onChangeText={(text) => {
+                setNewAddress({ ...newAddress, address: text });
+                fetchSuggestions(text);
+              }}
+            />
 
-      <TouchableOpacity style={styles.saveButton} onPress={handleAddOrEditAddress}>
-        <Text style={styles.saveButtonText}>
-          {selectedAddress ? 'Lưu' : 'Thêm'}
-        </Text>
-      </TouchableOpacity>
+            <ScrollView style={styles.suggestionsContainer}>
+              {isFetchingSuggestions && <Text>Đang tải...</Text>}
+              {suggestions.map((suggestion) => (
+                <TouchableOpacity
+                  key={suggestion.place_id}
+                  onPress={() => {
+                    setNewAddress({ ...newAddress, address: suggestion.description });
+                    setSuggestions([]);
+                  }}
+                >
+                  <Text style={styles.suggestionItem}>{suggestion.description}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
 
-      <TouchableOpacity style={styles.cancelButton} onPress={() => setIsModalVisible(false)}>
-        <Text style={styles.cancelButtonText}>Hủy</Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-</Modal>
+            <TextInput
+              style={styles.input}
+              placeholder="Tên khách hàng"
+              placeholderTextColor="#333"
+              value={newAddress.name}
+              onChangeText={(text) => setNewAddress({ ...newAddress, name: text })}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Số điện thoại"
+              placeholderTextColor="#333"
+              value={newAddress.phone}
+              onChangeText={(text) => setNewAddress({ ...newAddress, phone: text })}
+            />
 
+            <TouchableOpacity style={styles.saveButton} onPress={handleAddOrEditAddress}>
+              <Text style={styles.saveButtonText}>{selectedAddress ? 'Lưu' : 'Thêm'}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.cancelButton} onPress={() => setIsModalVisible(false)}>
+              <Text style={styles.cancelButtonText}>Hủy</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -379,6 +403,18 @@ const styles = StyleSheet.create({
     color: '#666',
     fontWeight: 'bold',
     fontSize: 16,
+  },  suggestionsContainer: {
+    maxHeight: 200,
+    marginVertical: 10,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+  },
+  suggestionItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
 });
 

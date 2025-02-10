@@ -10,6 +10,7 @@ const EmployeeSignIn = ({ navigation }) => {
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
+  
   // show/hide password
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const togglePasswordVisibility = () => {

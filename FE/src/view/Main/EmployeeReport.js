@@ -71,6 +71,7 @@ export default function EmployeeReport({ navigation }) {
             </Text>
           </TouchableOpacity>
 
+
           {/* Metrics */}
           <View style={styles.metricsContainer}>
             <View style={styles.metricBox}>

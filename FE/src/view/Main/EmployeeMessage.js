@@ -10,6 +10,7 @@ const EmployeeMessage = ({ navigation }) => {
   const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(false)
 
+  
   const fetchNotifications = async () => {
     setLoading(true)
     try {

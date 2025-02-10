@@ -48,6 +48,7 @@ const ServicePackage = ({ navigation, route }) => {
     setTotalPrice(finalPrice);
   };
 
+  
   // Recalculate price when duration or premium status changes
   useEffect(() => {
     if (serviceDetails) {

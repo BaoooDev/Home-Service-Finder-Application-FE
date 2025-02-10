@@ -16,6 +16,7 @@ const SignIn = ({ navigation }) => {
     setPasswordVisible(!isPasswordVisible);
   };
 
+  
   // Login form state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

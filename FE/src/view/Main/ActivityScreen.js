@@ -93,6 +93,7 @@ const ActivityScreen = ({ navigation }) => {
     );
   };
 
+  
   const renderJobDetails = (job) => {
     navigation.navigate('JobDetails', { job });
   };

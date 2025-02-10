@@ -95,6 +95,7 @@ const Confirmation = ({ route, navigation }) => {
       {/* Job Details */}
       <Text style={styles.sectionTitle}>Thông tin công việc</Text>
       
+      
       <View style={styles.jobDetails}>
       <Text style={styles.detailText}>
         Dịch vụ: {

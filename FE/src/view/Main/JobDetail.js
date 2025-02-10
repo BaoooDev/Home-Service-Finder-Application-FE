@@ -43,6 +43,7 @@ const JobDetail = ({ navigation, route }) => {
           console.error(`Failed to fetch job details. Status: ${response.status}`);
           return;
         }
+        
         const data = await response.json();
         if (data.success) {
           setJobDetails(data.job);

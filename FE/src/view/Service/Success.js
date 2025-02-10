@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 const Success = () => {
   const navigation = useNavigation();
 
+  
   return (
     <SafeAreaView style={styles.safeArea}>
       <Card containerStyle={styles.card}>

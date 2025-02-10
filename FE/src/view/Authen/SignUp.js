@@ -13,6 +13,7 @@ const SignUp = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  
   const togglePasswordVisibility = () => setPasswordVisible(!isPasswordVisible);
   const toggleConfirmPasswordVisibility = () => setConfirmPasswordVisible(!isConfirmPasswordVisible);
 

@@ -59,6 +59,7 @@ const EmployeeVerification = ({ route, navigation }) => {
   const [otpValues, setOtpValues] = useState(["", "", "", "", "", ""]); 
   const [isVerifying, setIsVerifying] = useState(false);
 
+  
   const handleChange = (text, index) => {
     const newValues = [...otpValues];
     newValues[index] = text;

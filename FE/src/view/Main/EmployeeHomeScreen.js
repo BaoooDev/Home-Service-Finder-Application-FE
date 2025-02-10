@@ -54,6 +54,7 @@ const EmployeeHomeScreen = ({ navigation }) => {
     }
   }
 
+  
   const fetchJobs = async () => {
     setLoading(true)
     try {

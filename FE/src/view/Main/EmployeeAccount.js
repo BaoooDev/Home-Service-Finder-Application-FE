@@ -15,6 +15,7 @@ const EmployeeAccountScreen = ({ navigation }) => {
         throw new Error('Token not found. Please login again.')
       }
 
+      
       const response = await fetch(`${API_URL}/me`, {
         method: 'GET',
         headers: {

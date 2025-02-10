@@ -17,6 +17,7 @@ export default function EmployeeHistories({ navigation }) {
         throw new Error('Token not found. Please login again.')
       }
 
+      
       const response = await fetch(`${API_URL}/jobs/history`, {
         method: 'GET',
         headers: {

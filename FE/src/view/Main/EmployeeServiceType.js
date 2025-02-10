@@ -131,6 +131,7 @@ const EmployeeServiceType = ({ navigation }) => {
     </SafeAreaView>
   )
 
+  
   // Render Districts Screen
   const renderDistricts = () => (
     <SafeAreaView style={styles.container}>
